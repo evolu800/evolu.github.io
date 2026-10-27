@@ -4276,6 +4276,11 @@ body.cropper-open { overflow: hidden; }
                     <p class="field-tip" style="margin:6px 0 0">每次回复会在 1 秒到这个时间之间随机到达。</p>
                   </div>
                   <div class="range-row">
+                    <div class="range-top"><span>梦角一次回复的消息数量</span><b id="replyCountValue" data-no-i18n>1 条</b></div>
+                    <input type="range" id="replyCountRange" min="1" max="10" step="1" value="1" aria-label="梦角一次回复的消息数量">
+                    <p class="field-tip" style="margin:6px 0 0">每次梦角回复时，会在 1 条到你选择的这个数量之间随机发送。</p>
+                  </div>
+                  <div class="range-row">
                     <div class="range-top"><span>问一问回复的时间</span><b id="askReplyDelayValue" data-no-i18n>最多 1 分钟</b></div>
                     <input type="range" id="askReplyDelayRange" min="1" max="300" step="1" value="60" aria-label="问一问回复的时间">
                     <p class="field-tip" style="margin:6px 0 0">发出问一问后，梦角会在 1 秒到这个时间之间随机回复；最长 5 分钟。</p>
@@ -4749,6 +4754,12 @@ body.cropper-open { overflow: hidden; }
   function randomReplyDelayMs() {
     const max = replyDelayMax() * 1000;
     return Math.max(1000, 1000 + Math.random() * Math.max(0, max - 1000));
+  }
+  function dreamReplyCountMax() {
+    return clamp(Math.round(Number(state?.settings?.replyCountMax) || 1), 1, 10);
+  }
+  function randomDreamReplyCount() {
+    return 1 + Math.floor(Math.random() * dreamReplyCountMax());
   }
   const CALL_DELAY_MAX = 600;
   function callReplyDelay() {
@@ -6257,6 +6268,7 @@ body.cropper-open { overflow: hidden; }
         companionFrequency: 'normal',
         dreamCallAuto: true,
         replyDelayMax: 5,
+        replyCountMax: 1,
         callReplyDelay: 5,
         callSpeechLang: 'auto',
         callAsrMode: 'auto',
@@ -6449,6 +6461,7 @@ body.cropper-open { overflow: hidden; }
     if (!['off', 'rare', 'normal', 'often'].includes(state.settings.companionFrequency)) state.settings.companionFrequency = 'normal';
     if (typeof state.settings.dreamCallAuto !== 'boolean') state.settings.dreamCallAuto = true;
     state.settings.replyDelayMax = clamp(Number(state.settings.replyDelayMax) || 5, 1, 3600);
+    state.settings.replyCountMax = clamp(Math.round(Number(state.settings.replyCountMax) || 1), 1, 10);
     state.settings.callReplyDelay = clamp(Number(state.settings.callReplyDelay) || 5, 1, CALL_DELAY_MAX);
     if (!['auto'].concat(LANGS.map(l => l.id)).includes(state.settings.callSpeechLang)) state.settings.callSpeechLang = 'auto';
     if (!['auto', 'browser', 'minimax'].includes(state.settings.callAsrMode)) state.settings.callAsrMode = 'auto';
@@ -8396,28 +8409,43 @@ body.cropper-open { overflow: hidden; }
     chatReplyTimer = null;
     state.chat.pendingReply = null;
     pendingTyping = false;
-    const avoid = recentDreamCards.slice(-Math.min(3, Math.max(0, enabledCards().length - 1)));
-    const card = drawCard(avoid);
-    if (!card) {
+    const allCards = enabledCards();
+    const count = Math.max(1, Math.min(allCards.length, randomDreamReplyCount()));
+    const avoid = recentDreamCards.slice(-Math.min(3, Math.max(0, allCards.length - 1)));
+    const recent = new Set(avoid);
+    const shuffle = list => {
+      for (let i = list.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [list[i], list[j]] = [list[j], list[i]];
+      }
+      return list;
+    };
+    const picked = shuffle(allCards.filter(card => !recent.has(card.id)))
+      .concat(shuffle(allCards.filter(card => recent.has(card.id))))
+      .slice(0, count);
+    if (!picked.length) {
       saveState();
       setTyping(false);
       if (currentApp === 'chat') renderChat();
       toast('没有可用的字卡了', 'error');
       return;
     }
-    recentDreamCards.push(card.id);
-    if (recentDreamCards.length > 8) recentDreamCards.shift();
-    const dreamMessage = addMessage({ role: 'dream', text: card.text, cardId: card.id, type: 'text' });
-    notifyDreamMessage(card.text);
+    picked.forEach(card => {
+      recentDreamCards.push(card.id);
+      if (recentDreamCards.length > 8) recentDreamCards.shift();
+    });
+    const dreamMessages = picked.map(card => addMessage({ role: 'dream', text: card.text, cardId: card.id, type: 'text' }));
+    const spokenText = picked.map(card => fillTemplate(card.text)).join(' ');
+    notifyDreamMessage(spokenText);
     setTyping(false);
     if (currentApp === 'chat') {
       renderChat();
       scrollChatToBottom(true);
     }
-    maybeScheduleDreamRecall(dreamMessage);
+    maybeScheduleDreamRecall(dreamMessages[dreamMessages.length - 1]);
     maybeDreamTransfer();
     if (state.settings.autoSpeak) {
-      speakText(fillTemplate(card.text), { openSettings: false }).catch(() => {});
+      speakText(spokenText, { openSettings: false }).catch(() => {});
     }
   }
   function scheduleDreamReply() {
@@ -16039,6 +16067,10 @@ body.cropper-open { overflow: hidden; }
     if (delayRange) delayRange.value = String(delaySecondsToSlider(replyDelayMax()));
     const delayValue = $('#replyDelayValue');
     if (delayValue) delayValue.textContent = formatDelayMax(replyDelayMax());
+    const countRange = $('#replyCountRange');
+    if (countRange) countRange.value = String(dreamReplyCountMax());
+    const countValue = $('#replyCountValue');
+    if (countValue) countValue.textContent = `${dreamReplyCountMax()} 条`;
     const callDelayRange = $('#callReplyDelayRange');
     if (callDelayRange) callDelayRange.value = String(callDelaySecondsToSlider(callReplyDelay()));
     const callDelayValue = $('#callReplyDelayValue');
@@ -16211,6 +16243,12 @@ body.cropper-open { overflow: hidden; }
       state.settings.replyDelayMax = delaySliderToSeconds(e.target.value);
       const label = $('#replyDelayValue');
       if (label) label.textContent = formatDelayMax(state.settings.replyDelayMax);
+      saveState();
+    });
+    $('#replyCountRange')?.addEventListener('input', e => {
+      state.settings.replyCountMax = clamp(Math.round(Number(e.target.value) || 1), 1, 10);
+      const label = $('#replyCountValue');
+      if (label) label.textContent = `${state.settings.replyCountMax} 条`;
       saveState();
     });
     $('#callReplyDelayRange')?.addEventListener('input', e => {
