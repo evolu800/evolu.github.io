@@ -1223,6 +1223,23 @@ a { color: var(--accent); }
 .filter-chip.active { background: var(--accent); border-color: transparent; color: var(--on-accent); font-weight: 650; }
 .filter-chip:hover:not(.active) { border-color: var(--line-strong); color: var(--ink); }
 .card-list { display: grid; gap: 8px; }
+.card-sticker-panel {
+  margin: 10px 0 12px; padding: 11px 12px; border: 1px solid var(--line);
+  border-radius: 16px; background: var(--glass);
+}
+.csp-head { display: flex; align-items: center; gap: 10px; }
+.csp-title { flex: 1; min-width: 0; }
+.csp-title b { display: block; margin-top: 2px; color: var(--ink); font-size: 13px; font-weight: 650; }
+.csp-title p { margin: 3px 0 0; color: var(--ink-dim); font-size: 8px; line-height: 1.55; }
+.csp-head .pill-btn { flex: 0 0 auto; min-height: 30px; padding: 0 9px; font-size: 8.5px; }
+.card-sticker-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+.card-sticker-grid:empty { display: none; }
+.card-sticker-item {
+  width: 48px; height: 48px; padding: 0; border: 1px solid var(--line);
+  border-radius: 10px; overflow: hidden; background: var(--glass); cursor: zoom-in;
+}
+.card-sticker-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.csp-empty { color: var(--ink-dim); font-size: 8.5px; line-height: 1.6; }
 .card-item {
   position: relative; padding: 13px 13px 11px 17px; border-radius: 16px;
   border: 1px solid var(--line); background: var(--panel);
@@ -1349,7 +1366,7 @@ a { color: var(--accent); }
   border-radius: 12px; background: var(--accent-soft); color: var(--ink);
   font-family: var(--font-display); font-size: 13px; line-height: 1.75; white-space: pre-wrap; word-break: break-word;
 }
-.diary-quote::before { content: "“"; position: absolute; left: 5px; top: -8px; color: var(--accent); opacity: .5; font-size: 30px; line-height: 1; }
+.diary-quote::before { content: ""; position: absolute; left: 5px; top: 9px; bottom: 9px; width: 2px; border-radius: 2px; background: var(--accent); opacity: .45; }
 .diary-card-tag { color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent); background: var(--accent-soft); border-radius: 4px; font-size: 7px; padding: 1px 4px; font-weight: 700; }
 .diary-more { margin-left: auto; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 7px; color: var(--ink-dim); }
 .diary-more:hover { background: var(--glass); color: var(--ink); }
@@ -3711,6 +3728,17 @@ body.cropper-open { overflow: hidden; }
               </div>
               <p class="cs-desc" id="cardsSummaryDesc">还没有字卡。写下第一句想让梦角对你说的话吧。</p>
             </div>
+            <section class="card-sticker-panel">
+              <div class="csp-head">
+                <div class="csp-title">
+                  <span class="cs-label">STICKER PACK</span>
+                  <b>表情包</b>
+                  <p>从字卡栏上传的表情包，也会同步到聊天的表情包栏。</p>
+                </div>
+                <button class="pill-btn" id="cardStickerAddBtn"><svg class="icon"><use href="#i-plus"/></svg> 上传表情包</button>
+              </div>
+              <div class="card-sticker-grid" id="cardStickerGrid"></div>
+            </section>
             <div class="filter-bar" id="cardFilters"></div>
             <div class="card-list" id="cardList"></div>
           </div>
@@ -6242,6 +6270,7 @@ body.cropper-open { overflow: hidden; }
       album: [],
       moments: [],
       diary: [],
+      diaryNextDreamAt: 0,
       timers: [],
       ornaments: [],
       clocks: [
@@ -6512,6 +6541,7 @@ body.cropper-open { overflow: hidden; }
       })) : []
     }));
     if (!Array.isArray(state.diary)) state.diary = [];
+    state.diaryNextDreamAt = Number(state.diaryNextDreamAt) || 0;
     state.diary = state.diary.filter(d => d && (d.text || '').trim()).map(d => ({
       id: typeof d.id === 'string' && d.id ? d.id : uid('dgr'),
       author: d.author === 'user' ? 'user' : 'dream',
@@ -8117,6 +8147,7 @@ body.cropper-open { overflow: hidden; }
   let chatMusicAudio = null;
   let chatMusicPlayingId = '';
   let dreamMessageTimer = null;
+  let diaryProactiveTimer = null;
   const openCallLogs = new Set();
   function updateRecallBanner() {
     const banner = $('#recallBanner');
@@ -8945,7 +8976,7 @@ body.cropper-open { overflow: hidden; }
     if (!grid) return;
     if (!state.stickers.length) {
       grid.innerHTML = `<div class="sticker-empty" style="grid-column:1/-1">表情包库还是空的。<br><button id="stickerEmptyAdd"><svg class="icon"><use href="#i-plus"/></svg> 从相册添加</button></div>`;
-      $('#stickerEmptyAdd')?.addEventListener('click', addStickers);
+      $('#stickerEmptyAdd')?.addEventListener('click', () => addStickers({ openTray: true }));
       return;
     }
     grid.innerHTML = state.stickers.map(s => {
@@ -8959,7 +8990,20 @@ body.cropper-open { overflow: hidden; }
       manage.classList.toggle('active', stickerManageMode);
     }
   }
-  async function addStickers() {
+  function renderCardStickers() {
+    const grid = $('#cardStickerGrid');
+    if (!grid) return;
+    if (!state.stickers.length) {
+      grid.innerHTML = '<div class="csp-empty">还没有表情包。上传的图片会同时出现在这里和聊天的表情包栏。</div>';
+      return;
+    }
+    grid.innerHTML = state.stickers.map(sticker => {
+      const url = mediaURL(sticker.mediaId);
+      if (!url) return '';
+      return `<button class="card-sticker-item" data-lightbox-src="${url}" data-lightbox-caption="${esc(sticker.name || '表情包')}" aria-label="${esc(sticker.name || '表情包')}"><img src="${url}" alt="${esc(sticker.name || '表情包')}"></button>`;
+    }).join('');
+  }
+  async function addStickers(opts = {}) {
     const files = await pickFile('image/*', true);
     if (!files || !files.length) return;
     let added = 0;
@@ -8973,8 +9017,9 @@ body.cropper-open { overflow: hidden; }
     if (added) {
       saveState(true);
       renderStickers();
-      $('#stickerTray')?.classList.add('open');
-      toast(`收好了 ${added} 张表情包`);
+      renderCardStickers();
+      if (opts.openTray !== false) $('#stickerTray')?.classList.add('open');
+      toast(opts.openTray === false ? `收好了 ${added} 张表情包，聊天里也能用了` : `收好了 ${added} 张表情包`);
     } else {
       toast('没有可用的图片', 'error');
     }
@@ -9184,7 +9229,7 @@ body.cropper-open { overflow: hidden; }
     const now = Date.now();
     call.status = 'active';
     call.connectedAt = now;
-    call.autoHangupAt = now + (90 + Math.random() * 330) * 1000;
+    call.autoHangupAt = now + (12 + Math.random() * 18) * 60 * 1000;
     call.replyDueAt = 0;
     call.speaking = false;
     call.hearing = false;
@@ -10009,7 +10054,7 @@ body.cropper-open { overflow: hidden; }
     if (!Array.isArray(call.transcript)) call.transcript = [];
     call.transcript.push({ role: 'dream', text: spoken.slice(0, 1200), cardId: card.id, ts: Date.now() });
     if (call.transcript.length > 200) call.transcript = call.transcript.slice(-200);
-    call.autoHangupAt = Math.max(Number(call.autoHangupAt) || 0, Date.now() + (60 + Math.random() * 180) * 1000);
+    call.autoHangupAt = Math.max(Number(call.autoHangupAt) || 0, Date.now() + (10 + Math.random() * 12) * 60 * 1000);
     saveState();
     updateCallUi();
     speakCallCard(spoken).catch(() => {});
@@ -10040,7 +10085,7 @@ body.cropper-open { overflow: hidden; }
     call.cardText = '';
     call.cardId = '';
     call.replyDueAt = Date.now() + delay * 1000;
-    call.autoHangupAt = Math.max(Number(call.autoHangupAt) || 0, call.replyDueAt + (90 + Math.random() * 120) * 1000);
+    call.autoHangupAt = Math.max(Number(call.autoHangupAt) || 0, call.replyDueAt + (10 + Math.random() * 10) * 60 * 1000);
     clearTimeout(callReplyTimer);
     const callId = call.id;
     callReplyTimer = setTimeout(() => {
@@ -10223,8 +10268,12 @@ body.cropper-open { overflow: hidden; }
       if (call.replyDueAt) {
         if (now >= call.replyDueAt) { deliverCallCard(call); return; }
       } else if (call.autoHangupAt && now >= call.autoHangupAt) {
-        endCall('dream');
-        return;
+        if (Math.random() < 0.28) {
+          endCall('dream');
+          return;
+        }
+        call.autoHangupAt = now + (4 + Math.random() * 8) * 60 * 1000;
+        saveState();
       }
     }
     updateCallUi();
@@ -10326,6 +10375,7 @@ body.cropper-open { overflow: hidden; }
     const list = $('#cardList');
     if (!list) return;
     applyIdentity();
+    renderCardStickers();
     const enabled = state.cards.filter(c => c.enabled !== false).length;
     $('#cardsTotal').textContent = state.cards.length;
     $('#cardsSummaryDesc').textContent = state.cards.length
@@ -10541,6 +10591,7 @@ body.cropper-open { overflow: hidden; }
     });
   }
   function bindCardEvents() {
+    $('#cardStickerAddBtn')?.addEventListener('click', () => addStickers({ openTray: false }));
     $('#cardList')?.addEventListener('click', e => {
       const edit = e.target.closest('[data-card-edit]');
       const del = e.target.closest('[data-card-del]');
@@ -10849,24 +10900,83 @@ body.cropper-open { overflow: hidden; }
       toast(`${state.profile.dreamName}写好了回信`);
     }, delay);
   }
-  function dreamWriteDiary() {
-    if (!enabledCards().length) {
-      toast(state.cards.length ? '没有开启的字卡，先开启几张吧' : '字卡库是空的，先写几张字卡吧', 'error');
-      setTimeout(() => openApp('cards'), 500);
+  function stripDiaryPunctuation(text) {
+    return String(text || '')
+      .replace(/[\p{P}\p{S}]/gu, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+  function buildDreamDiaryText() {
+    const seen = new Set();
+    const pool = [];
+    for (const card of enabledCards()) {
+      const text = stripDiaryPunctuation(fillTemplate(card.text));
+      if (!text) continue;
+      const key = text.toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      pool.push({ id: card.id, text });
+    }
+    if (pool.length < 5) return null;
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    const max = Math.min(10, pool.length);
+    const count = 5 + Math.floor(Math.random() * (max - 5 + 1));
+    const picked = pool.slice(0, count);
+    return { text: picked.map(item => item.text).join('\n'), cardIds: picked.map(item => item.id) };
+  }
+  function dreamDiaryDelayMs() {
+    return (10 + Math.random() * 20) * 60 * 60 * 1000;
+  }
+  function scheduleNextDreamDiary(force = false) {
+    const now = Date.now();
+    if (!force && Number(state.diaryNextDreamAt) > now) return;
+    state.diaryNextDreamAt = now + dreamDiaryDelayMs();
+    saveState();
+  }
+  function checkDreamDiaryProactive() {
+    const due = Number(state.diaryNextDreamAt) || 0;
+    if (!due) { scheduleNextDreamDiary(true); return; }
+    if (Date.now() < due) return;
+    const built = buildDreamDiaryText();
+    if (!built) {
+      state.diaryNextDreamAt = Date.now() + (2 + Math.random() * 4) * 60 * 60 * 1000;
+      saveState();
       return;
     }
-    const card = drawCard(recentDreamCards.slice(-3));
-    if (!card) return;
-    recentDreamCards.push(card.id);
-    if (recentDreamCards.length > 8) recentDreamCards.shift();
     state.diary.unshift({
-      id: uid('dgr'), author: 'dream', text: card.text, mood: '', cardId: card.id,
-      ts: Date.now(), comments: []
+      id: uid('dgr'), author: 'dream', text: built.text, mood: '', cardId: '',
+      cardIds: built.cardIds, auto: true, ts: Date.now(), comments: []
     });
+    if (state.diary.length > 300) state.diary = state.diary.slice(0, 300);
+    scheduleNextDreamDiary(true);
+    saveState(true);
+    if (currentApp === 'diary') renderDiary();
+    if (document.visibilityState === 'visible') toast(`${state.profile.dreamName}写了一篇日记`);
+  }
+  function initDreamDiaryProactive() {
+    if (!state.diaryNextDreamAt) scheduleNextDreamDiary(true);
+    if (!diaryProactiveTimer) diaryProactiveTimer = setInterval(checkDreamDiaryProactive, 60000);
+    setTimeout(checkDreamDiaryProactive, 2400);
+  }
+  function dreamWriteDiary() {
+    const built = buildDreamDiaryText();
+    if (!built) {
+      toast('至少需要 5 张开启且内容不同的字卡，才能写成一篇日记', 'error');
+      if (!state.cards.length) setTimeout(() => openApp('cards'), 500);
+      return;
+    }
+    state.diary.unshift({
+      id: uid('dgr'), author: 'dream', text: built.text, mood: '', cardId: '',
+      cardIds: built.cardIds, auto: false, ts: Date.now(), comments: []
+    });
+    scheduleNextDreamDiary(true);
     saveState(true);
     renderDiary();
     if (currentApp === 'diary') $('.app-scroll', $('#view-diary'))?.scrollTo({ top: 0, behavior: 'smooth' });
-    toast(`${state.profile.dreamName}从字卡里挑了一句，写进了日记`);
+    toast(`${state.profile.dreamName}从字卡里挑了几句，写进了日记`);
   }
   function openDiarySheet() {
     let mood = '';
@@ -16346,7 +16456,7 @@ body.cropper-open { overflow: hidden; }
       renderStickers();
       $('#stickerTray')?.classList.toggle('open');
     });
-    $('#stickerAdd')?.addEventListener('click', addStickers);
+    $('#stickerAdd')?.addEventListener('click', () => addStickers({ openTray: true }));
     $('#stickerManage')?.addEventListener('click', () => {
       stickerManageMode = !stickerManageMode;
       renderStickers();
@@ -16556,6 +16666,7 @@ body.cropper-open { overflow: hidden; }
     bindAll();
     restoreChatRuntime();
     initDreamProactive();
+    initDreamDiaryProactive();
     initNotifications();
     bindLockScreen();
     initHomePages();
