@@ -1185,8 +1185,10 @@ a { color: var(--accent); }
   background: color-mix(in srgb, var(--panel-2) 88%, transparent);
   color: var(--ink); box-shadow: 0 14px 34px rgba(0,0,0,.28);
   backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  touch-action: none; cursor: grab; user-select: none;
 }
 .call-mini.show { display: flex; animation: popIn .25s ease both; }
+.call-mini:active { cursor: grabbing; }
 .call-mini-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 16%, transparent); animation: pulseSoft 1.2s infinite; }
 .call-mini-name { max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; font-weight: 650; }
 .call-mini-time { color: var(--ink-dim); font-size: 9px; font-variant-numeric: tabular-nums; }
@@ -1644,7 +1646,10 @@ a { color: var(--accent); }
 .music-controls .icon { width: 18px; height: 18px; }
 .music-controls button.play .icon { width: 23px; height: 23px; }
 .music-toolbar { display: flex; gap: 6px; margin: 13px 0 8px; }
+#view-music.dropping { outline: 2px dashed var(--accent); outline-offset: -6px; border-radius: 18px; background: color-mix(in srgb, var(--accent) 7%, transparent); }
 .music-toolbar .ghost-btn { flex: 1; min-height: 37px; border-radius: 12px; font-size: 10px; }
+.music-toolbar label.ghost-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; }
+.music-file-input { position: fixed; left: -10000px; top: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 .playlist-head { display: flex; align-items: center; justify-content: space-between; margin: 14px 2px 7px; color: var(--ink-dim); font-size: 8.5px; letter-spacing: .16em; text-transform: uppercase; }
 .playlist-head button { color: var(--ink-dim); font-size: 8.5px; letter-spacing: 0; }
 .playlist { display: flex; flex-direction: column; border-radius: 15px; border: 1px solid var(--line); overflow: hidden; background: var(--panel); }
@@ -3912,8 +3917,10 @@ body.cropper-open { overflow: hidden; }
             </div>
             <div>
               <div class="music-toolbar">
-                <button class="ghost-btn" id="musicFilesBtn"><svg class="icon"><use href="#i-upload"/></svg> 导入歌曲</button>
-                <button class="ghost-btn" id="playlistBtn"><svg class="icon"><use href="#i-link"/></svg> 导入歌单</button>
+                <label class="ghost-btn" id="musicFilesBtn" for="musicFileInput"><svg class="icon"><use href="#i-upload"/></svg> 导入歌曲</label>
+                <input type="file" class="music-file-input" id="musicFileInput" accept="audio/*,.mp3,.m4a,.mp4,.wav,.aac,.flac,.ogg,.oga,.opus,.weba,.webm,.aiff,.amr" multiple>
+                <button class="ghost-btn" id="musicUrlBtn"><svg class="icon"><use href="#i-link"/></svg> 粘贴链接</button>
+                <button class="ghost-btn" id="playlistBtn"><svg class="icon"><use href="#i-cards"/></svg> 导入歌单</button>
               </div>
               <div class="playlist-head"><span>播放列表</span><button id="musicClearBtn">清空</button></div>
               <div class="playlist" id="playlist"></div>
@@ -4547,7 +4554,7 @@ body.cropper-open { overflow: hidden; }
   };
   const WEATHER_CACHE_KEY = 'mengcard.weather.cache.v1';
   const DB_NAME = 'mengcard-media-v1';
-  const DB_VERSION = 1;
+  const DB_VERSION = 2;
   const APP_VERSION = '1.0.0';
   const DAY = 86400000;
 
@@ -4802,6 +4809,15 @@ body.cropper-open { overflow: hidden; }
   }
 
   const I18N_CORE = {"it":{"和梦角一起，把日子过成一个小房间":"Trasforma le giornate in una piccola stanza, insieme al tuo sogno.","把心里的问题放在桌上，抽一张牌":"Metti sul tavolo la domanda che hai nel cuore e pesca una carta.","占卜":"Divinazione","把日子、生日和身体的小秘密放在一起":"Tieni insieme i giorni, i compleanni e i piccoli segreti del corpo.","家园":"Casa","猜数字":"Indovina il numero","日历":"Calendario","10月24日 · 星期五 · 宜想念":"24 ottobre · Venerdì · Mancante","10月24日 · 星期五":"24 ottobre · Venerdì","轮到你":"Tocca a te","我的小宇宙":"Il mio piccolo universo","字卡":"Word Card","和梦角下一局 · AI 托管":"E Dream Corner Next Round · Hosting AI","晚上好，":"Buonasera,","扭一颗":"Twist One","梦角的口袋":"Tasca per corno da sogno","我写一篇":"Scriverò un articolo","月":"Mese","我的名字":"Il mio nome","头像大小":"Dimensione avatar","星星":"Stella","清空":"Cancella","主题":"Oggetto","字卡内容保持原文":"Il contenuto della wordcard rimane nella sua lingua originale","拾梦 · 梦角字卡":"Dream Pickup · Carta Personaggio Angolo dei Sogni","计时器":"Timer","连成五子":"Lian Cheng Wu Zi","导入歌曲":"Importa canzoni","清除全部本地数据":"Cancella tutti i dati locali","我的图片":"Le mie foto","字卡库":"Libreria di Word Card","管理":"Gestisci","添加城市":"Aggiungi città","AI 托管提示":"Consigli per ospitare con intelligenza artificiale","放入小物":"Inserisci piccoli oggetti","自定义背景与图标":"Sfondo e icona personalizzati","梦角那里 ·":"Angolo dei sogni lì ·","小物管理":"Gestione Piccoli Beni","把想说的话，悄悄写进字卡里。":"Sussurra quello che vuoi dire nel biglietto.","0 张":"0 fogli","即使字卡是中文，也用设置里的语言朗读":"Leggi ad alta voce nella lingua nelle impostazioni, anche se la scheda delle parole è in cinese","我的小物":"I miei gadget","把两颗心，连成一条看得见的线":"Collega i due cuori in una linea visibile","把想说的话，放在字卡里。":"Metti quello che vuoi dire nella scheda carattere.","同一天":"Stesso giorno","星期五":"Venerdì","进入软件背景":"Inserisci lo sfondo del software","楚河汉界":"Reame Han del fiume Chu","上传照片":"Carica foto","初局 · 0 胜 0 负":"Primo turno · 0 vince 0 perde","把房间调成你喜欢的光线":"Trasforma la stanza nella luce che preferisci","语言与翻译":"Lingua e traduzione","MiniMax 语音":"MiniMax Voice","扭一扭，":"Twist,","尚未填写 MiniMax 配置":"La configurazione MiniMax non è stata compilata","设置":"Impostazioni","还没有字卡。写下第一句想让梦角对你说的话吧。":"Ancora nessuna scheda di parole.Scrivi la prima frase che vuoi che Dream Angle ti dica.","地图":"Mappa","25 分钟":"25 minuti","表情包 · 我的收藏":"Emote · I miei preferiti","打开陪伴模式":"Attiva la modalità compagnia","陪伴设置":"Impostazioni compagnia","标记":"Bandiera","字体气质":"Temperamento del carattere","显示与阅读":"Visualizzazione e lettura","五子棋":"Scacchi Wuzi","黑":"Nero","写下今天的心情或小事，梦角会从你的字卡里挑一句，作为他的回信夹在日记里。":"Annota l\u0027umore di oggi o una piccola cosa, e l\u0027angolo dei sogni sceglierà una frase dalla tua scheda di parole come sua lettera di risposta nel suo diario.","语录 100% · 小物 0%":"Preventivo 100% · Piccolo 0%","语录池已备好":"Pool di preventivi pronto","深夜里的一层薄雾。适合把心事写得很轻，再交给梦角收好。":"Uno strato di nebbia nel cuore della notte.È adatto per scrivere i tuoi pensieri con molta leggerezza e poi consegnarli all\u0027angolo dei sogni per essere messi via.","拾梦需要启用 JavaScript 才能运行。请允许 JavaScript 后刷新页面。":"Dreampicker richiede JavaScript abilitato per l\u0027esecuzione.Consenti a JavaScript di aggiornare la pagina.","朗读前先翻译成所选语言":"Traduci nella lingua selezionata prima di leggere","圆":"Cerchio","让梦角抽字卡发一条":"Lascia che Dream Corner peschi una carta","时间":"Ora","梦角所有的回应，都从这里被拾起":"Tutte le risposte di Dream Corner sono state raccolte da qui.","拾梦":"Raccogli un sogno","播放列表":"Playlist","今天，也值得被记住":"Oggi vale anche la pena ricordare","搜索任意县市或国家，选好后地图会自动连出一条线，并算出大概距离。":"Cerca qualsiasi contea o paese e la mappa collegherà automaticamente una linea e calcolerà la distanza approssimativa.","管理字卡库":"Gestisci libreria di schede Word","写下来，让他读过再收好":"Scrivilo, fallo leggere e mettilo via","相册":"Album","我发一条":"Te ne mando uno","梦角会接管黑方。落子之后，给他一点思考的时间。":"Dream Horn prenderà il controllo di Black.Dopo essere caduto, dagli un po\u0027 di tempo per pensare.","张字卡":"Carte personaggio","导入壁纸":"Importa sfondo","把这里，变成更像你们的地方":"Rendi questo posto più simile al tuo.","预设主题":"Tema preimpostato","主题与壁纸":"Temi e sfondi","AI 托管中":"Ospitato da AI","添加":"Aggiungi","在字卡里等你":"Ti aspettiamo nella word card","音乐":"Musica","主页背景":"Home Background","状态签名":"Firma dello stato","恢复默认":"Ripristina predefiniti","选择位置":"Seleziona posizione","正在字卡里等你":"Ti aspettiamo nella word card","扭蛋池":"Gacha Pool","文件导入":"Importazione file","回复字号":"Dimensione carattere risposta","我们":"Noi","悔棋":"Rimpiangere gli scacchi","导入数据备份":"Importa backup dei dati","柔雾玻璃":"Vetro nebulizzato morbido","柔和圆体":"Corpo rotondo morbido","棋局结束":"Fine del gioco","五":"Cinque","文艺宋体":"Arial letterario e artistico","月雾":"Nebbia lunare","游戏":"Giochi","朋友圈":"Momenti","消耗 MiniMax 语音额度":"Consuma crediti vocali MiniMax","让TA写一篇":"Lascia che TA scriva un articolo","摆件":"Soprammobili","更多":"Altro","网站语言":"Lingua del sito web","一起做过的事":"Cosa abbiamo fatto insieme","你执红先行。点击棋子，再点一个亮点落子。":"Prima ti aggrappi al rosso.Fai clic su un token, quindi fai clic su un elemento in evidenza.","天气":"Meteo","清除":"Cancella","再来一局":"Un\u0027altra partita.","导入一首歌，或从歌单里选一首":"Importa un brano o scegline uno dalla tua playlist","日记":"Diario","东京":"Tokyo","最近扭到":"Recentemente attorcigliato a","自定义页面强调色":"Colore personalizzato dell\u0027accento della pagina","上海":"Shanghai","想和 TA 一起":"Voglio lavorare con TA","上滑解锁":"Scorri verso l\u0027alto per sbloccare","强调色":"Colore in risalto","星夜霓虹":"Notte stellata al neon","干净黑体":"Clean Bold","纸感留白":"Spazio bianco su carta","导出我的数据":"Esporta i miei dati","扭蛋":"Gacha","点此添加一个纪念日":"Clicca qui per aggiungere un anniversario","把今天的一小段时间，留给彼此":"Concedetevi un po\u0027 di tempo oggi","你写下字卡，梦角从中拾起一句回应。":"Scrivi una carta calligrafica e l\u0027angolo del sogno ne raccoglie una risposta.","图片":"Immagine","邀请 TA 一起":"Invita TA insieme","同一片天空，不同的天气":"Stesso cielo, tempo diverso","本地时间":"Ora locale","翻译使用免费的在线翻译服务，失败时会退回原文。语音语言始终跟随上方「语言与翻译」里的选择。":"Translation utilizza un servizio di traduzione online gratuito che restituisce il testo originale in caso di errore.La lingua vocale segue sempre la selezione in \"Lingua e traduzione\" di cui sopra.","收到回复时自动朗读":"Parla automaticamente quando ricevi una risposta","自定义软件图标":"Icone software personalizzate","还没有日子":"Ancora nessun giorno","梦角":"Punto Sogno","我":"Io","重开":"Riapri","壁纸":"Carta da parati","把遥远的时差，折成一句晚安":"Piegare il jet lag lontano in una buona notte","DREAMCARD ARCHIVE / 拾梦数据档案 / NO.2049":"Archivio Dreamcard/archivio dati Dream/N.2049","聊天背景":"Sfondo della chat","遇到浏览器 CORS 时填写":"Compilare quando si incontra il browser CORS","做成摆件":"Crea ornamenti","象":"Elefante","写下的每一张字卡，都会被他拾起。":"Prendeva ogni carta che scriveva.","所有数据只保存在这台设备里。":"Tutti i dati vengono salvati solo in questo dispositivo.","让这一晚，有背景音":"Lascia che questa notte abbia un suono di sottofondo","恢复":"Ripristina","还没有播放":"Non ancora giocato","数据与关于":"Dati e informazioni su","世界的此刻":"In questo momento nel mondo","宋":"Canzone","我们的日子":"I nostri giorni","高级 · 代理地址":"Avanzato · Indirizzo proxy","导入歌单":"Importazione di una playlist","正在读取天空的实时数据…":"Lettura dei dati in tempo reale dal cielo...","只属于你和梦角的小小广场":"Una piazzetta tutta per te e l\u0027angolo dei tuoi sogni","试听梦角的声音":"Ascolta il suono di Dream Horn","随主题":"Con tema","中国象棋":"Scacchi cinesi","东京 21:00":"Tokyo 21:00","看看今天梦角想对你说什么。":"Guarda cosa vuole dirti oggi Dream Corner.","梦角的名字":"Nome del corno del sogno","收集和他有关的每一帧":"Raccogli ogni fotogramma a lui correlato","语录 · 小物 · 每日陪伴":"Preventivo · Articolo piccolo · Compagnia giornaliera","从梦角的口袋里，摇出一点小幸运":"Scuoti un po\u0027 di fortuna dalla tasca del Corno dei Sogni","陪伴":"Accompagnamento","界面风格":"Stile interfaccia","天":"giorni","正在连接天空…":"Collegamento al cielo...","0 次相遇":"0 incontri","这次多久":"Per quanto tempo questa volta","旅人":"Ospiti","切换后，界面文字会立即翻译成所选语言。你写的字卡、日记与消息保持原样。":"Una volta commutato, il testo dell\u0027interfaccia viene immediatamente tradotto nella lingua selezionata.Le schede, i diari e i messaggi che scrivi rimangono gli stessi.","重新观看新手教程":"Rivedi il tutorial iniziale","新手教程":"Tutorial iniziale"},"ja":{"和梦角一起，把日子过成一个小房间":"夢の彼と一緒に、日々を小さな部屋に。","把心里的问题放在桌上，抽一张牌":"心の中の問いをテーブルに置いて、カードを一枚引いて。","占卜":"占い","把日子、生日和身体的小秘密放在一起":"日々と誕生日、体の小さな秘密をひとつに。","家园":"おうち","猜数字":"数字当て","日历":"カレンダー","10月24日 · 星期五 · 宜想念":"10月24日・金・見逃し","10月24日 · 星期五":"10月24日・金","轮到你":"今度はあなたの番です","我的小宇宙":"マイ・リトル・ユニバース","字卡":"ワードカード","和梦角下一局 · AI 托管":"そしてドリームコーナー次のラウンド・AIホスティング","晚上好，":"こんばんは。","扭一颗":"ツイストワン","梦角的口袋":"ドリームホーンポケット","我写一篇":"記事を書く","月":"月","我的名字":"私の名前","头像大小":"アバターサイズ","星星":"星","清空":"クリア","主题":"件名","字卡内容保持原文":"ワードカードのコンテンツは元の言語のままです","拾梦 · 梦角字卡":"ドリームピックアップ・ドリームコーナーキャラクターカード","计时器":"タイマー","连成五子":"Lian Cheng Wu Zi","导入歌曲":"曲をインポート","清除全部本地数据":"すべてのローカルデータを消去","我的图片":"マイ写真","字卡库":"ワードカードライブラリ","管理":"管理","添加城市":"都市を追加","AI 托管提示":"AIホスティングのヒント","放入小物":"小物を入れる","自定义背景与图标":"カスタム背景とアイコン","梦角那里 ·":"あそこのドリームコーナー・","小物管理":"小物管理","把想说的话，悄悄写进字卡里。":"カードに何を言いたいかをささやきます。","0 张":"0枚","即使字卡是中文，也用设置里的语言朗读":"単語カードが中国語であっても、設定の言語で声に出して読む","我的小物":"マイガジェット","把两颗心，连成一条看得见的线":"2つのハートを目に見える線に結び付けます","把想说的话，放在字卡里。":"フォントカードに言いたいことを入力します。","同一天":"当日","星期五":"金曜日","进入软件背景":"ソフトウェアの背景を入力してください","楚河汉界":"楚河漢界","上传照片":"写真をアップロード","初局 · 0 胜 0 负":"第1ラウンド・0勝0敗","把房间调成你喜欢的光线":"お部屋をお好みの明るさに変える","语言与翻译":"言語と翻訳","MiniMax 语音":"MiniMaxボイス","扭一扭，":"ツイスト、\u003c詳細付\u003e","尚未填写 MiniMax 配置":"MiniMax設定が入力されていません","设置":"設定","还没有字卡。写下第一句想让梦角对你说的话吧。":"ワードカードはまだありません。ドリームアングルに伝えてほしい最初の文章を書き留めてください。","地图":"マップ","25 分钟":"25分","表情包 · 我的收藏":"エモート・お気に入り","打开陪伴模式":"コンパニオンシップモードをオンにする","陪伴设置":"コンパニオン設定","标记":"フラグ","字体气质":"フォントの気質","显示与阅读":"表示と読み取り","五子棋":"Wuzi Chess","黑":"黒","写下今天的心情或小事，梦角会从你的字卡里挑一句，作为他的回信夹在日记里。":"今日の気分やささいなことを書き留めると、夢のコーナーがあなたのワードカードから返事の手紙として彼の日記に文を選びます。","语录 100% · 小物 0%":"見積もり100 ％・小0 ％","语录池已备好":"見積もりプールの準備ができました","深夜里的一层薄雾。适合把心事写得很轻，再交给梦角收好。":"真夜中の霧の層。あなたの考えを非常に軽く書き留めてから、夢のコーナーに手渡して片付けるのに適しています。","拾梦需要启用 JavaScript 才能运行。请允许 JavaScript 后刷新页面。":"Dreampickerを実行するにはJavaScriptが有効になっている必要があります。ページを更新するにはJavaScriptを許可してください。","朗读前先翻译成所选语言":"読む前に選択した言語に翻訳する","圆":"円","让梦角抽字卡发一条":"ドリームコーナーにカードを引かせる","时间":"時間","梦角所有的回应，都从这里被拾起":"ドリームコーナーの反応はここから全て拾った。","拾梦":"夢を拾う","播放列表":"プレイリスト","今天，也值得被记住":"今日、それはまた覚えておく価値があります","搜索任意县市或国家，选好后地图会自动连出一条线，并算出大概距离。":"任意の郡または国を検索すると、地図は自動的に線を結び、おおよその距離を計算します。","管理字卡库":"ワードカードライブラリの管理","写下来，让他读过再收好":"それを書き留めて、彼に読ませて、それを片付けさせてください","相册":"アルバム","我发一条":"送ります","梦角会接管黑方。落子之后，给他一点思考的时间。":"ドリームホーンがブラックを乗っ取ります。転んだ後は、少し考える時間をあげましょう。","张字卡":"キャラクターカード","导入壁纸":"壁紙をインポート","把这里，变成更像你们的地方":"この場所を自分のものにしましょう。","预设主题":"プリセットテーマ","主题与壁纸":"テーマと壁紙","AI 托管中":"AIホスト型","添加":"追加","在字卡里等你":"ワードカードであなたを待っています","音乐":"音楽","主页背景":"ホームの背景","状态签名":"ステータス署名","恢复默认":"デフォルトに戻す","选择位置":"場所を選択","正在字卡里等你":"ワードカードであなたを待っています","扭蛋池":"ガチャプール","文件导入":"ファイルのインポート","回复字号":"返信のフォントサイズ","我们":"私たちは","悔棋":"後悔チェス","导入数据备份":"データバックアップをインポート","柔雾玻璃":"ソフトミストガラス","柔和圆体":"ソフトラウンドボディ","棋局结束":"ゲーム終了","五":"ファイブ","文艺宋体":"文学と芸術のArial","月雾":"月の霧","游戏":"ゲーム","朋友圈":"モーメント","消耗 MiniMax 语音额度":"MiniMaxボイスクレジットを消費する","让TA写一篇":"TAに記事を書かせる","摆件":"オーナメント","更多":"その他","网站语言":"ウェブサイトの言語","一起做过的事":"共に成し遂げたこと","你执红先行。点击棋子，再点一个亮点落子。":"最初に赤をつかんでください。トークンをクリックし、ハイライトをクリックします。","天气":"天気","清除":"クリア","再来一局":"もう一試合。","导入一首歌，或从歌单里选一首":"曲をインポートするか、プレイリストから曲を選択してください","日记":"日記","东京":"東京","最近扭到":"最近ツイストされたのは","自定义页面强调色":"カスタムページのアクセントカラー","上海":"上海","想和 TA 一起":"TAと仕事をしたい","上滑解锁":"上にスワイプしてロックを解除","强调色":"アクセントカラー","星夜霓虹":"星輝く夜のネオン","干净黑体":"太字できれい","纸感留白":"紙の上の空白","导出我的数据":"データをエクスポートする","扭蛋":"ガチャ","点此添加一个纪念日":"記念日を追加するにはここをクリックしてください","把今天的一小段时间，留给彼此":"今日はお互いに少し時間をあげましょう","你写下字卡，梦角从中拾起一句回应。":"あなたが書道カードを書くと、夢のコーナーがそれから応答を拾います。","图片":"画像","邀请 TA 一起":"TAを一緒に招待する","同一片天空，不同的天气":"同じ空、違う天気","本地时间":"現地時間","翻译使用免费的在线翻译服务，失败时会退回原文。语音语言始终跟随上方「语言与翻译」里的选择。":"翻訳は無料のオンライン翻訳サービスを使用しており、失敗した場合に元のテキストを返します。音声言語は、常に上記の「言語と翻訳」の選択に従います。","收到回复时自动朗读":"返信を受け取ったら自動的に話します","自定义软件图标":"カスタムソフトウェアアイコン","还没有日子":"まだ日数がありません","梦角":"ドリームポイント","我":"自分","重开":"再開","壁纸":"壁紙","把遥远的时差，折成一句晚安":"遠くの時差ぼけを折りたたんでおやすみなさい","DREAMCARD ARCHIVE / 拾梦数据档案 / NO.2049":"DREAMCARD ARCHIVE/DREAM DATA ARCHIVE/NO.2049","聊天背景":"チャットの背景","遇到浏览器 CORS 时填写":"ブラウザーCORSに遭遇した場合は記入してください","做成摆件":"オーナメントを作る","象":"象","写下的每一张字卡，都会被他拾起。":"彼は書き留めたすべてのカードを拾います。","所有数据只保存在这台设备里。":"すべてのデータはこのデバイスにのみ保存されます。","让这一晚，有背景音":"今夜をバックグラウンドサウンドにしましょう","恢复":"復元","还没有播放":"まだプレイしていません","数据与关于":"データとその内容","世界的此刻":"世界のこの瞬間に","宋":"歌","我们的日子":"私たちの日々","高级 · 代理地址":"アドバンス・プロキシアドレス","导入歌单":"プレイリストをインポートする","正在读取天空的实时数据…":"空からライブデータを読み取っています…","只属于你和梦角的小小广场":"あなたとあなたの夢の一角のための小さな広場","试听梦角的声音":"ドリームホルンの音を聞く","随主题":"テーマ付き","中国象棋":"中国のチェス","东京 21:00":"東京21:00","看看今天梦角想对你说什么。":"Dream Cornerが今日あなたに伝えたいことをご覧ください。","梦角的名字":"夢の角の名","收集和他有关的每一帧":"彼に関連するすべてのフレームを集める","语录 · 小物 · 每日陪伴":"名言・小物・毎日の付き添い","从梦角的口袋里，摇出一点小幸运":"ドリームホルンのポケットから少し幸運を掴もう","陪伴":"コンパニオンシップ","界面风格":"インターフェーススタイル","天":"日","正在连接天空…":"空に接続しています...","0 次相遇":"0回のエンカウンター","这次多久":"今回はどのくらいかかりますか","旅人":"ゲスト","切换后，界面文字会立即翻译成所选语言。你写的字卡、日记与消息保持原样。":"切り替えると、インターフェーステキストはすぐに選択した言語に翻訳されます。あなたが書いたカード、日記、メッセージは変わりません。","重新观看新手教程":"チュートリアルをもう一度見る","新手教程":"チュートリアル"},"fr":{"和梦角一起，把日子过成一个小房间":"Faites de vos journées une petite pièce, avec votre rêve.","把心里的问题放在桌上，抽一张牌":"Posez sur la table la question de votre cœur et tirez une carte.","占卜":"Divination","把日子、生日和身体的小秘密放在一起":"Réunissez vos jours, vos anniversaires et les petits secrets du corps.","家园":"Maison","猜数字":"Devine le nombre","日历":"Calendrier","10月24日 · 星期五 · 宜想念":"24 octobre · Vendredi · Manquant","10月24日 · 星期五":"24 octobre · Vendredi","轮到你":"C\u0027est votre tour","我的小宇宙":"Mon petit univers","字卡":"Carte Word","和梦角下一局 · AI 托管":"Et Dream Corner Prochaine manche · Hébergement IA","晚上好，":"Bonsoir,","扭一颗":"Twist One","梦角的口袋":"Poche pour corne de rêve","我写一篇":"Je vais écrire un article","月":"Mois","我的名字":"Mon nom","头像大小":"Taille de l\u0027avatar","星星":"Étoile","清空":"Effacer","主题":"Objet","字卡内容保持原文":"Le contenu de Wordcard reste dans sa langue d\u0027origine","拾梦 · 梦角字卡":"Dream Pickup · Carte de personnage Dream Corner","计时器":"Minuterie","连成五子":"Lian Cheng Wu Zi","导入歌曲":"Importer des chansons","清除全部本地数据":"Effacer toutes les données locales","我的图片":"Mes photos","字卡库":"Bibliothèque de cartes Word","管理":"Gérer","添加城市":"Ajouter une ville","AI 托管提示":"Conseils pour l\u0027accueil de voyageurs IA","放入小物":"Mettre de petits objets","自定义背景与图标":"Arrière-plan et icône personnalisés","梦角那里 ·":"Dream Corner là-dedans ·","小物管理":"Gestion des petites marchandises","把想说的话，悄悄写进字卡里。":"Chuchotez ce que vous voulez dire dans la carte.","0 张":"0 feuillet","即使字卡是中文，也用设置里的语言朗读":"Lire à haute voix dans la langue dans les paramètres, même si le mot carte est en chinois","我的小物":"Mes gadgets","把两颗心，连成一条看得见的线":"Connectez les deux cœurs en une ligne visible","把想说的话，放在字卡里。":"Mettez ce que vous voulez dire dans la carte de police.","同一天":"Le jour même","星期五":"Vendredi","进入软件背景":"Saisir l\u0027arrière-plan du logiciel","楚河汉界":"Royaume Han de la rivière Chu","上传照片":"Télécharger une photo","初局 · 0 胜 0 负":"Premier tour · 0 gagne 0 défaite","把房间调成你喜欢的光线":"Transformez la pièce en la lumière que vous aimez","语言与翻译":"Langue et traduction","MiniMax 语音":"Voix MiniMax","扭一扭，":"Twist,","尚未填写 MiniMax 配置":"La configuration MiniMax n\u0027a pas été renseignée","设置":"Paramètres","还没有字卡。写下第一句想让梦角对你说的话吧。":"Pas encore de cartes de mots.Notez la première phrase que vous voulez que Dream Angle vous dise.","地图":"Carte","25 分钟":"25 minutes","表情包 · 我的收藏":"Émoticône · Mes favoris","打开陪伴模式":"Activer le mode compagnon","陪伴设置":"Paramètres de la compagnie","标记":"Drapeau","字体气质":"Tempérament de police","显示与阅读":"Affichage et lecture","五子棋":"Wuzi Chess","黑":"Noir","写下今天的心情或小事，梦角会从你的字卡里挑一句，作为他的回信夹在日记里。":"Notez l\u0027humeur ou la petite chose d\u0027aujourd\u0027 hui, et le coin des rêves choisira une phrase de votre carte de mots comme lettre de réponse dans son journal.","语录 100% · 小物 0%":"Devis 100% · Petit 0%","语录池已备好":"Pool de devis prêt","深夜里的一层薄雾。适合把心事写得很轻，再交给梦角收好。":"Une couche de brume au milieu de la nuit.Il convient pour écrire vos pensées très légèrement, puis les remettre au coin du rêve pour être rangé.","拾梦需要启用 JavaScript 才能运行。请允许 JavaScript 后刷新页面。":"Dreampicker nécessite JavaScript activé pour s\u0027exécuter.Veuillez autoriser JavaScript à actualiser la page.","朗读前先翻译成所选语言":"Traduire dans la langue sélectionnée avant de lire","圆":"Cercle","让梦角抽字卡发一条":"Laissez Dream Corner tirer une carte","时间":"Heure","梦角所有的回应，都从这里被拾起":"Toutes les réponses de Dream Corner ont été récupérées ici.","拾梦":"Prenez un rêve","播放列表":"Playlists","今天，也值得被记住":"Aujourd\u0027hui, il convient également de rappeler","搜索任意县市或国家，选好后地图会自动连出一条线，并算出大概距离。":"Recherchez n\u0027importe quel comté ou pays, et la carte reliera automatiquement une ligne et calculera la distance approximative.","管理字卡库":"Gérer la bibliothèque de cartes Word","写下来，让他读过再收好":"Écrivez-le, laissez-le le lire et rangez-le","相册":"Albums","我发一条":"J\u0027en enverrai un","梦角会接管黑方。落子之后，给他一点思考的时间。":"Dream Horn prendra le contrôle de Black.Après sa chute, donnez-lui le temps de réfléchir.","张字卡":"Cartes de personnage","导入壁纸":"Importer du papier peint","把这里，变成更像你们的地方":"Faites en sorte que ce logement ressemble davantage au vôtre.","预设主题":"Thème prédéfini","主题与壁纸":"Thèmes et fonds d\u0027écran","AI 托管中":"IA hébergée","添加":"Ajouter","在字卡里等你":"Vous attend dans la carte du mot","音乐":"Musique","主页背景":"Contexte de l\u0027accueil","状态签名":"Signature du statut","恢复默认":"Restaurer les valeurs par défaut","选择位置":"Sélectionner l\u0027emplacement","正在字卡里等你":"Vous attend dans la carte du mot","扭蛋池":"Piscine Gacha","文件导入":"Importation de fichier","回复字号":"Taille de police de réponse","我们":"Nous","悔棋":"Regretter les échecs","导入数据备份":"Importer la sauvegarde des données","柔雾玻璃":"Verre à brouillard doux","柔和圆体":"Corps rond souple","棋局结束":"Fin DE LA partie","五":"Cinq","文艺宋体":"Arial littéraire et artistique","月雾":"Brouillard lunaire","游戏":"Jeux","朋友圈":"Moments","消耗 MiniMax 语音额度":"Consommer des crédits vocaux MiniMax","让TA写一篇":"Laissez TA rédiger un article","摆件":"Décorations","更多":"Plus","网站语言":"Langue du site Web","一起做过的事":"Ce que nous avons fait ensemble","你执红先行。点击棋子，再点一个亮点落子。":"Vous vous accrochez d\u0027abord au rouge.Cliquez sur un jeton, puis sur un surlignage.","天气":"Météo","清除":"Effacer","再来一局":"Encore un jeu.","导入一首歌，或从歌单里选一首":"Importez une chanson ou choisissez-en une dans votre liste de lecture","日记":"Journal","东京":"Tokyo","最近扭到":"Récemment tordu à","自定义页面强调色":"Couleur d\u0027accentuation de page personnalisée","上海":"Shanghai","想和 TA 一起":"Je veux travailler avec TA","上滑解锁":"Balayez vers le haut pour déverrouiller","强调色":"Couleur d\u0027accentuation","星夜霓虹":"Starry Night Neon","干净黑体":"Clean Bold","纸感留白":"Espace blanc sur papier","导出我的数据":"Exporter mes données","扭蛋":"Gacha","点此添加一个纪念日":"Cliquez ici pour ajouter un anniversaire","把今天的一小段时间，留给彼此":"Donnez-vous un peu de temps aujourd\u0027hui","你写下字卡，梦角从中拾起一句回应。":"Vous écrivez une carte de calligraphie, et le coin du rêve en reçoit une réponse.","图片":"Image","邀请 TA 一起":"Inviter l\u0027AT ensemble","同一片天空，不同的天气":"Même ciel, météo différente","本地时间":"Heure locale","翻译使用免费的在线翻译服务，失败时会退回原文。语音语言始终跟随上方「语言与翻译」里的选择。":"La traduction utilise un service de traduction en ligne gratuit qui renvoie le texte original en cas d\u0027échec.La langue vocale suit toujours la sélection dans « Langue et traduction » ci-dessus.","收到回复时自动朗读":"Parlez automatiquement lorsque vous recevez une réponse","自定义软件图标":"Icônes logicielles personnalisées","还没有日子":"Pas encore de jours","梦角":"Dream Point","我":"Moi","重开":"Rouvrir","壁纸":"Papier peint","把遥远的时差，折成一句晚安":"Pliez le décalage horaire lointain dans une bonne nuit","DREAMCARD ARCHIVE / 拾梦数据档案 / NO.2049":"Dreamcard archive/Dream Data archive/NO.2049","聊天背景":"Arrière-plan du chat","遇到浏览器 CORS 时填写":"Remplissez lorsque vous rencontrez le cors du navigateur","做成摆件":"Faire des ornements","象":"Éléphant","写下的每一张字卡，都会被他拾起。":"Il ramassait toutes les cartes qu\u0027il écrivait.","所有数据只保存在这台设备里。":"Toutes les données sont enregistrées sur cet appareil uniquement.","让这一晚，有背景音":"Laissez cette nuit avoir un son de fond","恢复":"Restaurer","还没有播放":"Pas encore joué","数据与关于":"Les données et à propos","世界的此刻":"En ce moment dans le monde","宋":"Chanson","我们的日子":"Nos jours","高级 · 代理地址":"Avancé · Adresse proxy","导入歌单":"Importation d\u0027une playlist","正在读取天空的实时数据…":"Lecture des données en direct depuis le ciel…","只属于你和梦角的小小广场":"Un petit carré rien que pour vous et le coin de vos rêves","试听梦角的声音":"Écoutez le son de Dream Horn","随主题":"Avec thème","中国象棋":"Échecs chinois","东京 21:00":"Tokyo 21h00","看看今天梦角想对你说什么。":"Découvrez ce que Dream Corner veut vous dire aujourd\u0027hui.","梦角的名字":"Nom du Dream Horn","收集和他有关的每一帧":"Recueillir tous les cadres qui lui sont liés","语录 · 小物 · 每日陪伴":"Devis · Petit article · Compagnonnage quotidien","从梦角的口袋里，摇出一点小幸运":"Sortez un peu de chance de la poche de Dream Horn","陪伴":"Compagnonnage","界面风格":"Style d\u0027interface","天":"jours","正在连接天空…":"Connexion au ciel...","0 次相遇":"0 rencontre","这次多久":"Combien de temps cette fois","旅人":"Voyageurs","切换后，界面文字会立即翻译成所选语言。你写的字卡、日记与消息保持原样。":"Une fois basculé, le texte de l\u0027interface est immédiatement traduit dans la langue sélectionnée.Les cartes, journaux et messages que vous écrivez restent les mêmes.","重新观看新手教程":"Revoir le tutoriel de démarrage","新手教程":"Tutoriel de démarrage"},"pt":{"和梦角一起，把日子过成一个小房间":"Transforme os seus dias num pequeno quarto, junto do seu sonho.","把心里的问题放在桌上，抽一张牌":"Coloque a pergunta do seu coração na mesa e tire uma carta.","占卜":"Adivinhação","把日子、生日和身体的小秘密放在一起":"Guarde os seus dias, aniversários e pequenos segredos do corpo.","家园":"Casa","猜数字":"Adivinhe o número","日历":"Calendário","10月24日 · 星期五 · 宜想念":"24 de outubro · Sexta-feira · Falta","10月24日 · 星期五":"24 de outubro · Sexta-feira","轮到你":"É a sua vez","我的小宇宙":"Meu Pequeno Universo","字卡":"Cartão de palavras","和梦角下一局 · AI 托管":"E Dream Corner Next Round · Hospedagem de IA","晚上好，":"Boa noite,","扭一颗":"Torcer um","梦角的口袋":"Bolso do Chifre dos Sonhos","我写一篇":"Vou escrever um artigo","月":"Mês","我的名字":"O meu nome","头像大小":"Tamanho do Avatar","星星":"Estrela","清空":"Limpar","主题":"Assunto","字卡内容保持原文":"O conteúdo do Wordcard permanece no idioma original","拾梦 · 梦角字卡":"Captador de Sonhos · Carta de Personagem do Canto dos Sonhos","计时器":"Temporizador","连成五子":"Lian Cheng Wu Zi","导入歌曲":"Importar músicas","清除全部本地数据":"Limpar todos os dados locais","我的图片":"As minhas imagens","字卡库":"Biblioteca de Cartões do Word","管理":"Gerir","添加城市":"Adicionar cidade","AI 托管提示":"Dicas de hospedagem com IA","放入小物":"Colocar em artigos pequenos","自定义背景与图标":"Ícone \u0026 Fundo Personalizado","梦角那里 ·":"Canto dos Sonhos lá ·","小物管理":"Gestão de Pequenas Mercadorias","把想说的话，悄悄写进字卡里。":"Sussurre o que quer dizer no cartão.","0 张":"0 folhas","即使字卡是中文，也用设置里的语言朗读":"Leia em voz alta no idioma nas configurações, mesmo que o cartão de palavras esteja em chinês","我的小物":"Os meus gadgets","把两颗心，连成一条看得见的线":"Conecte os dois corações numa linha visível","把想说的话，放在字卡里。":"Coloque o que quer dizer no cartão de fontes.","同一天":"Mesmo dia","星期五":"Sexta-feira","进入软件背景":"Insira o plano de fundo do software","楚河汉界":"Reino Han do Rio Chu","上传照片":"Carregar foto","初局 · 0 胜 0 负":"Primeira rodada · 0 vitórias 0 derrotas","把房间调成你喜欢的光线":"Transforme o quarto na luz de que gosta","语言与翻译":"Idioma e tradução","MiniMax 语音":"MiniMax Voice","扭一扭，":"Torção,","尚未填写 MiniMax 配置":"A configuração do MiniMax não foi preenchida","设置":"Definições","还没有字卡。写下第一句想让梦角对你说的话吧。":"Ainda não há cartões de palavras.Escreva a primeira frase que você deseja que o Ângulo dos Sonhos lhe diga.","地图":"Mapa","25 分钟":"25 minutos","表情包 · 我的收藏":"Expressão · Meus favoritos","打开陪伴模式":"Ativar o modo de companheirismo","陪伴设置":"Definições de companheirismo","标记":"Bandeira","字体气质":"Temperamento da Fonte","显示与阅读":"Exibição e leitura","五子棋":"Xadrez Wuzi","黑":"Preto","写下今天的心情或小事，梦角会从你的字卡里挑一句，作为他的回信夹在日记里。":"Anote o humor ou a coisinha de hoje, e o canto dos sonhos escolherá uma frase do seu cartão de palavras como sua carta de resposta em seu diário.","语录 100% · 小物 0%":"Cotação 100% · Pequeno 0%","语录池已备好":"Pool de cotação pronto","深夜里的一层薄雾。适合把心事写得很轻，再交给梦角收好。":"Uma camada de névoa no meio da noite.É adequado para escrever seus pensamentos de forma muito leve e, em seguida, entregá-los ao canto dos sonhos para serem guardados.","拾梦需要启用 JavaScript 才能运行。请允许 JavaScript 后刷新页面。":"O Dreampicker requer JavaScript habilitado para ser executado.Permita que o JavaScript atualize a página.","朗读前先翻译成所选语言":"Traduzir para o idioma selecionado antes de ler","圆":"Círculo","让梦角抽字卡发一条":"Deixe o Canto dos Sonhos comprar uma carta","时间":"Hora","梦角所有的回应，都从这里被拾起":"Todas as respostas do Canto dos Sonhos foram captadas a partir daqui.","拾梦":"Escolha um sonho","播放列表":"Listas de reprodução","今天，也值得被记住":"Hoje, também vale lembrar","搜索任意县市或国家，选好后地图会自动连出一条线，并算出大概距离。":"Pesquise qualquer município ou país e o mapa conectará automaticamente uma linha e calculará a distância aproximada.","管理字卡库":"Gerir biblioteca de cartões do Word","写下来，让他读过再收好":"Anote, deixe-o ler e guarde","相册":"Álbuns","我发一条":"Vou enviar um","梦角会接管黑方。落子之后，给他一点思考的时间。":"O Chifre dos Sonhos assumirá o Black.Depois de cair, dê-lhe algum tempo para pensar.","张字卡":"Cartas de Personagem","导入壁纸":"Importar Papel de Parede","把这里，变成更像你们的地方":"Torne este lugar mais parecido com o seu.","预设主题":"Tema predefinido","主题与壁纸":"Temas e papéis de parede","AI 托管中":"Hospedado por IA","添加":"Adicionar","在字卡里等你":"À sua espera no cartão de palavras","音乐":"Música","主页背景":"Antecedentes da Casa","状态签名":"Assinatura de estado","恢复默认":"Restaurar padrões","选择位置":"Escolher localização","正在字卡里等你":"À sua espera no cartão de palavras","扭蛋池":"Piscina Gacha","文件导入":"Importação de Ficheiro","回复字号":"Tamanho da fonte da resposta","我们":"Nós","悔棋":"Xadrez de Arrependimento","导入数据备份":"Importar backup de dados","柔雾玻璃":"Vidro de névoa macia","柔和圆体":"Corpo redondo macio","棋局结束":"Fim DO jogo","五":"Cinco","文艺宋体":"Arial Literário e Artístico","月雾":"Névoa Lunar","游戏":"Jogos","朋友圈":"Momentos","消耗 MiniMax 语音额度":"Consumir créditos de voz MiniMax","让TA写一篇":"Deixe a TA escrever um artigo","摆件":"Ornamentos","更多":"Mais","网站语言":"Idioma do site","一起做过的事":"O que fizemos juntos","你执红先行。点击棋子，再点一个亮点落子。":"Você segura o vermelho primeiro.Clique num token e, em seguida, clique num destaque.","天气":"Clima","清除":"Limpar","再来一局":"Mais um jogo.","导入一首歌，或从歌单里选一首":"Importe uma música ou escolha uma da sua lista de reprodução","日记":"Diário","东京":"Tóquio","最近扭到":"Torcido recentemente para","自定义页面强调色":"Cor de destaque da página personalizada","上海":"Xangai","想和 TA 一起":"Quero trabalhar com TA","上滑解锁":"Deslize para cima para desbloquear","强调色":"Cor de destaque","星夜霓虹":"Néon da Noite Estrelada","干净黑体":"Clean Bold","纸感留白":"Espaço em branco no papel","导出我的数据":"Exportar os meus dados","扭蛋":"Gacha","点此添加一个纪念日":"Clique aqui para adicionar um aniversário","把今天的一小段时间，留给彼此":"Dê um pouco de tempo um ao outro hoje","你写下字卡，梦角从中拾起一句回应。":"Você escreve um cartão de caligrafia e o canto dos sonhos capta uma resposta dele.","图片":"Imagem","邀请 TA 一起":"Convidar TA juntos","同一片天空，不同的天气":"Mesmo céu, clima diferente","本地时间":"Hora local","翻译使用免费的在线翻译服务，失败时会退回原文。语音语言始终跟随上方「语言与翻译」里的选择。":"A tradução usa um serviço de tradução online gratuito que retorna o texto original se ele falhar.O idioma de voz segue sempre a seleção em \"Idioma e Tradução\" acima.","收到回复时自动朗读":"Fale automaticamente quando receber uma resposta","自定义软件图标":"Ícones de software personalizados","还没有日子":"Ainda não há dias","梦角":"Dream Point","我":"Eu","重开":"Reabrir","壁纸":"Papel de parede","把遥远的时差，折成一句晚安":"Transforme o jet lag distante numa boa noite","DREAMCARD ARCHIVE / 拾梦数据档案 / NO.2049":"Arquivo Dreamcard/arquivo DE dados Dream/Nº 2049","聊天背景":"Histórico do chat","遇到浏览器 CORS 时填写":"Preencha ao encontrar o CORS do navegador","做成摆件":"Fazer enfeites","象":"Elefante","写下的每一张字卡，都会被他拾起。":"Ele pegava cada cartão que escrevia.","所有数据只保存在这台设备里。":"Todos os dados são salvos apenas neste dispositivo.","让这一晚，有背景音":"Deixe esta noite ter um som de fundo","恢复":"Restaurar","还没有播放":"Ainda não jogou","数据与关于":"Dados e sobre","世界的此刻":"Neste momento no mundo","宋":"Música","我们的日子":"OS nossos dias","高级 · 代理地址":"Avançado · Endereço de proxy","导入歌单":"Importar uma lista de reprodução","正在读取天空的实时数据…":"Lendo dados ao vivo do céu...","只属于你和梦角的小小广场":"Uma pequena praça só para si e para o canto dos seus sonhos","试听梦角的声音":"Ouça o som do Chifre dos Sonhos","随主题":"Com tema","中国象棋":"Xadrez Chinês","东京 21:00":"Tóquio 21:00","看看今天梦角想对你说什么。":"Veja o que o Dream Corner quer dizer hoje.","梦角的名字":"Nome do Chifre dos Sonhos","收集和他有关的每一帧":"Colete todos os quadros relacionados a ele","语录 · 小物 · 每日陪伴":"Citação · Item Pequeno · Companheirismo Diário","从梦角的口袋里，摇出一点小幸运":"Tire um pouco de sorte do bolso do Chifre dos Sonhos","陪伴":"Companheirismo","界面风格":"Estilo de interface","天":"dias","正在连接天空…":"A ligar ao céu...","0 次相遇":"0 encontros","这次多久":"Quanto tempo desta vez","旅人":"Hóspedes","切换后，界面文字会立即翻译成所选语言。你写的字卡、日记与消息保持原样。":"Uma vez alterado, o texto da interface é imediatamente traduzido para o idioma selecionado.Os cartões, diários e mensagens que você escreve permanecem os mesmos.","重新观看新手教程":"Ver o tutorial inicial novamente","新手教程":"Tutorial inicial"},"ko":{"和梦角一起，把日子过成一个小房间":"꿈속 그와 함께, 하루하루를 작은 방으로.","把心里的问题放在桌上，抽一张牌":"마음속 질문을 탁자 위에 올려두고 카드 한 장을 뽑아 보세요.","占卜":"점술","把日子、生日和身体的小秘密放在一起":"날짜와 생일, 몸의 작은 비밀을 한곳에.","家园":"우리 집","猜数字":"숫자 맞히기","日历":"달력","10月24日 · 星期五 · 宜想念":"10월 24일 · 금요일 · 누락","10月24日 · 星期五":"10월 24일 · 금요일","轮到你":"차례가 되었습니다","我的小宇宙":"마이 리틀 유니버스","字卡":"Word 카드","和梦角下一局 · AI 托管":"And Dream Corner Next Round · AI 호스팅","晚上好，":"님, 안녕하세요.","扭一颗":"비틀기 1","梦角的口袋":"드림 혼 포켓","我写一篇":"게시글을 작성하겠습니다.","月":"월","我的名字":"내 이름","头像大小":"아바타 크기","星星":"별","清空":"삭제","主题":"제목","字卡内容保持原文":"Wordcard 콘텐츠는 원래 언어로 유지됩니다","拾梦 · 梦角字卡":"드림 픽업 · 드림 코너 캐릭터 카드","计时器":"타이머","连成五子":"롄청우지","导入歌曲":"노래 가져오기","清除全部本地数据":"모든 로컬 데이터 지우기","我的图片":"내 사진","字卡库":"Word 카드 라이브러리","管理":"관리","添加城市":"도시 추가","AI 托管提示":"AI 호스팅 팁","放入小物":"작은 아이템 넣기","自定义背景与图标":"사용자 정의 배경 및 아이콘","梦角那里 ·":"드림 코너가 있습니다 ·","小物管理":"소량 물품 관리","把想说的话，悄悄写进字卡里。":"카드에 하고 싶은 말을 속삭이세요.","0 张":"0매","即使字卡是中文，也用设置里的语言朗读":"단어 카드가 중국어로 되어 있더라도 설정에서 해당 언어로 소리내어 읽습니다.","我的小物":"내 가젯","把两颗心，连成一条看得见的线":"두 하트를 가시선으로 연결","把想说的话，放在字卡里。":"폰트 카드에 원하는 내용을 입력하세요.","同一天":"당일","星期五":"금요일","进入软件背景":"소프트웨어 배경 입력","楚河汉界":"추강한림원","上传照片":"사진 업로드","初局 · 0 胜 0 负":"1차전 · 0승 0패","把房间调成你喜欢的光线":"방을 마음에 드는 조명으로 바꿔보세요.","语言与翻译":"언어 및 번역","MiniMax 语音":"MiniMax 음성","扭一扭，":"트위스트,","尚未填写 MiniMax 配置":"MiniMax 구성이 채워지지 않았습니다","设置":"설정","还没有字卡。写下第一句想让梦角对你说的话吧。":"아직 단어 카드가 없습니다.드림 앵글이 여러분에게 전하고 싶은 첫 문장을 적어보세요.","地图":"지도","25 分钟":"25분","表情包 · 我的收藏":"감정 표현 · 즐겨찾기","打开陪伴模式":"교제 모드 켜기","陪伴设置":"동반자 관계 설정","标记":"플래그","字体气质":"글꼴 기질","显示与阅读":"디스플레이 및 읽기","五子棋":"우지 체스","黑":"블랙","写下今天的心情或小事，梦角会从你的字卡里挑一句，作为他的回信夹在日记里。":"오늘의 기분이나 사소한 것을 적으면 꿈 코너에서 단어 카드의 문장을 일기에 회신하는 편지로 선택합니다.","语录 100% · 小物 0%":"견적 100% · 소액 0%","语录池已备好":"견적 풀 준비 완료","深夜里的一层薄雾。适合把心事写得很轻，再交给梦角收好。":"한밤중의 안개 한 겹.자신의 생각을 아주 가볍게 적은 다음 꿈 코너로 넘겨 치우기에 적합합니다.","拾梦需要启用 JavaScript 才能运行。请允许 JavaScript 后刷新页面。":"Dreampicker를 실행하려면 JavaScript를 활성화해야 합니다.자바스크립트가 페이지를 새로 고치도록 허용하십시오.","朗读前先翻译成所选语言":"읽기 전에 선택한 언어로 번역","圆":"원형","让梦角抽字卡发一条":"드림코너 카드 뽑기","时间":"시간","梦角所有的回应，都从这里被拾起":"드림 코너의 모든 응답은 여기서 따왔다.","拾梦":"꿈 줍기","播放列表":"재생 목록","今天，也值得被记住":"오늘날, 그것은 또한 기억할 가치가 있습니다.","搜索任意县市或国家，选好后地图会自动连出一条线，并算出大概距离。":"카운티 또는 국가를 검색하면 지도가 자동으로 선을 연결하고 대략적인 거리를 계산합니다.","管理字卡库":"Word 카드 라이브러리 관리","写下来，让他读过再收好":"그것을 적고, 그가 그것을 읽고 치우게하십시오","相册":"앨범","我发一条":"하나 보내드릴게요","梦角会接管黑方。落子之后，给他一点思考的时间。":"드림 혼이 블랙을 인수할 것입니다.떨어지고 나면 생각할 시간을 줘.","张字卡":"캐릭터 카드","导入壁纸":"배경화면 가져오기","把这里，变成更像你们的地方":"이 숙소를 내 집처럼 꾸며보세요.","预设主题":"프리셋 테마","主题与壁纸":"테마 및 배경 화면","AI 托管中":"AI 호스팅됨","添加":"추가","在字卡里等你":"단어 카드에서 회원님을 기다리는 중","音乐":"음악","主页背景":"숙소 배경","状态签名":"상태 서명","恢复默认":"기본값 복원","选择位置":"위치 선택","正在字卡里等你":"단어 카드에서 회원님을 기다리는 중","扭蛋池":"가차 수영장","文件导入":"파일 가져오기","回复字号":"회신 글꼴 크기","我们":"우리는","悔棋":"후회 체스","导入数据备份":"데이터 백업 가져오기","柔雾玻璃":"소프트 미스트 글래스","柔和圆体":"부드러운 라운드 바디","棋局结束":"게임 종료","五":"다섯","文艺宋体":"문학 및 예술적 시련","月雾":"달 안개","游戏":"게임","朋友圈":"모멘트","消耗 MiniMax 语音额度":"MiniMax 음성 크레딧 사용","让TA写一篇":"TA가 게시글 작성하기","摆件":"장식품","更多":"더 보기","网站语言":"웹사이트 언어","一起做过的事":"우리가 함께한 일","你执红先行。点击棋子，再点一个亮点落子。":"당신은 먼저 빨간색을 고수합니다.토큰을 클릭한 다음 하이라이트를 클릭합니다.","天气":"날씨","清除":"삭제","再来一局":"한 판 더.","导入一首歌，或从歌单里选一首":"노래를 가져오거나 재생 목록에서 하나를 선택하세요","日记":"다이어리","东京":"도쿄","最近扭到":"최근 트위스트 대상:","自定义页面强调色":"사용자 정의 페이지 강조 색상","上海":"상하이","想和 TA 一起":"TA와 함께 일하고 싶습니다.","上滑解锁":"화면을 위로 밀어 잠금을 해제하세요","强调色":"강조 색상","星夜霓虹":"별이 빛나는 밤의 네온","干净黑体":"깔끔한 굵게","纸感留白":"종이에 공백","导出我的数据":"내 데이터 내보내기","扭蛋":"가차","点此添加一个纪念日":"기념일을 추가하려면 여기를 클릭하세요","把今天的一小段时间，留给彼此":"오늘 서로에게 약간의 시간을 주세요","你写下字卡，梦角从中拾起一句回应。":"서예 카드를 쓰면 꿈 코너에서 답장을 받습니다.","图片":"이미지","邀请 TA 一起":"함께 TA 초대하기","同一片天空，不同的天气":"같은 하늘, 다른 날씨","本地时间":"현지 시간","翻译使用免费的在线翻译服务，失败时会退回原文。语音语言始终跟随上方「语言与翻译」里的选择。":"번역은 실패할 경우 원문을 반환하는 무료 온라인 번역 서비스를 사용합니다.음성 언어는 항상 위의 \"언어 및 번역\" 에서 선택한 내용을 따릅니다.","收到回复时自动朗读":"응답을 받으면 자동으로 말하기","自定义软件图标":"사용자 정의 소프트웨어 아이콘","还没有日子":"아직 날짜 없음","梦角":"드림포인트","我":"나","重开":"다시 열기","壁纸":"벽지","把遥远的时差，折成一句晚安":"멀리 있는 시차를 접어 좋은 밤을 보내세요.","DREAMCARD ARCHIVE / 拾梦数据档案 / NO.2049":"드림카드 아카이브/DREAM DATA ARCHIVE/NO.2049","聊天背景":"채팅 배경","遇到浏览器 CORS 时填写":"브라우저 CORS를 만날 때 기입","做成摆件":"장식품 만들기","象":"코끼리","写下的每一张字卡，都会被他拾起。":"그는 적어 놓은 카드를 모조리 집어들었다.","所有数据只保存在这台设备里。":"모든 데이터는 이 장치에만 저장됩니다.","让这一晚，有背景音":"오늘 밤 배경 소리를 들려주세요.","恢复":"복원","还没有播放":"아직 플레이하지 않음","数据与关于":"데이터 및 정보","世界的此刻":"지금 이 순간, 세상은","宋":"노래","我们的日子":"우리의 날들","高级 · 代理地址":"고급 · 프록시 주소","导入歌单":"재생목록 가져오기","正在读取天空的实时数据…":"하늘에서 실시간 데이터를 읽는 중...","只属于你和梦角的小小广场":"당신과 당신의 꿈의 모퉁이를 위한 작은 광장","试听梦角的声音":"드림혼 소리 듣기","随主题":"테마 포함","中国象棋":"중국 체스","东京 21:00":"도쿄 21:00","看看今天梦角想对你说什么。":"오늘 드림 코너가 여러분에게 전하고 싶은 말을 확인해보세요.","梦角的名字":"꿈의 뿔 이름","收集和他有关的每一帧":"그와 관련된 모든 프레임을 수집하십시오","语录 · 小物 · 每日陪伴":"견적 · 소형 품목 · 일일 동반자","从梦角的口袋里，摇出一点小幸运":"드림 혼의 주머니에서 약간의 행운을 흔들어보세요","陪伴":"동반자 관계","界面风格":"인터페이스 스타일","天":"일","正在连接天空…":"하늘과 연결 중...","0 次相遇":"만남 0회","这次多久":"이 시간의 길이","旅人":"게스트","切换后，界面文字会立即翻译成所选语言。你写的字卡、日记与消息保持原样。":"전환되면 인터페이스 텍스트가 선택한 언어로 즉시 번역됩니다.작성한 카드, 저널 및 메시지는 그대로 유지됩니다.","重新观看新手教程":"초보자 튜토리얼 다시 보기","新手教程":"초보자 튜토리얼"},"de":{"和梦角一起，把日子过成一个小房间":"Mach aus deinen Tagen ein kleines Zimmer, zusammen mit deinem Traum.","把心里的问题放在桌上，抽一张牌":"Legen Sie die Frage aus Ihrem Herzen auf den Tisch und ziehen Sie eine Karte.","占卜":"Wahrsagerei","把日子、生日和身体的小秘密放在一起":"Bewahre Tage, Geburtstage und kleine Körpergeheimnisse an einem Ort.","家园":"Zuhause","猜数字":"Zahl raten","日历":"Kalender","10月24日 · 星期五 · 宜想念":"24. Oktober · Freitag · Fehlt","10月24日 · 星期五":"24. Oktober · Freitag","轮到你":"Du bist dran","我的小宇宙":"My Little Universe","字卡":"Wortkarte","和梦角下一局 · AI 托管":"Und Dream Corner nächste Runde · KI-Hosting","晚上好，":"Guten Abend,","扭一颗":"Twist One","梦角的口袋":"Traumhorntasche","我写一篇":"Ich schreibe einen Artikel","月":"Monat","我的名字":"Mein Name","头像大小":"Avatargröße","星星":"Stern","清空":"Löschen","主题":"Fach","字卡内容保持原文":"Wordcard-Inhalt bleibt in Originalsprache erhalten","拾梦 · 梦角字卡":"Dream Pickup · Dream Corner Charakterkarte","计时器":"Timer","连成五子":"Lian Cheng Wu Zi","导入歌曲":"Songs importieren","清除全部本地数据":"Alle lokalen Daten löschen","我的图片":"Meine Bilder","字卡库":"Wortkartenbibliothek","管理":"Verwalten","添加城市":"Stadt hinzufügen","AI 托管提示":"Tipps für KI-Gastgeber","放入小物":"Legen Sie kleine Gegenstände hinein","自定义背景与图标":"Benutzerdefinierter Hintergrund \u0026 Symbol","梦角那里 ·":"Dream Corner dort ·","小物管理":"Kleinwarenmanagement","把想说的话，悄悄写进字卡里。":"Flüstere in die Karte, was du sagen willst.","0 张":"0 Blatt","即使字卡是中文，也用设置里的语言朗读":"In den Einstellungen in der Sprache vorlesen, auch wenn die Wortkarte auf Chinesisch ist","我的小物":"Meine Gadgets","把两颗心，连成一条看得见的线":"Verbinden Sie die beiden Herzen zu einer sichtbaren Linie","把想说的话，放在字卡里。":"Geben Sie in die Schriftkarte ein, was Sie sagen möchten.","同一天":"Am selben Tag","星期五":"Freitag","进入软件背景":"Software-Hintergrund eingeben","楚河汉界":"Chu-Fluss Han-Reich","上传照片":"Foto hochladen","初局 · 0 胜 0 负":"Erste Runde · 0 Siege 0 Niederlagen","把房间调成你喜欢的光线":"Verwandeln Sie den Raum in das Licht, das Ihnen gefällt","语言与翻译":"Sprache \u0026 Übersetzung","MiniMax 语音":"MiniMax Voice","扭一扭，":"Twist,","尚未填写 MiniMax 配置":"MiniMax-Konfiguration wurde nicht ausgefüllt","设置":"Einstellungen","还没有字卡。写下第一句想让梦角对你说的话吧。":"Noch keine Wortkarten.Schreibe den ersten Satz auf, den Dream Angle dir sagen soll.","地图":"Karte","25 分钟":"25 Minuten","表情包 · 我的收藏":"Emote · Meine Favoriten","打开陪伴模式":"Schalten Sie den Kameradschaftsmodus ein","陪伴设置":"Einstellungen für die Begleitung","标记":"Flagge","字体气质":"Schriftart Temperament","显示与阅读":"Anzeige \u0026 Ablesen","五子棋":"Wuzi-Schach","黑":"Schwarz","写下今天的心情或小事，梦角会从你的字卡里挑一句，作为他的回信夹在日记里。":"Schreiben Sie die heutige Stimmung oder Kleinigkeit auf, und die Traumecke wird einen Satz aus Ihrer Wortkarte als Antwortbrief in sein Tagebuch aufnehmen.","语录 100% · 小物 0%":"Angebot 100 % · Klein 0 %","语录池已备好":"Angebotspool bereit","深夜里的一层薄雾。适合把心事写得很轻，再交给梦角收好。":"Eine Nebelschicht mitten in der Nacht.Es eignet sich dazu, deine Gedanken ganz leicht aufzuschreiben und dann in die Traumecke zu geben, um sie wegzulegen.","拾梦需要启用 JavaScript 才能运行。请允许 JavaScript 后刷新页面。":"Dreampicker erfordert, dass JavaScript aktiviert ist, um ausgeführt zu werden.Bitte erlauben Sie JavaScript, die Seite zu aktualisieren.","朗读前先翻译成所选语言":"Vor dem Lesen in die ausgewählte Sprache übersetzen","圆":"Kreis","让梦角抽字卡发一条":"Lass Dream Corner eine Karte ziehen","时间":"Zeit","梦角所有的回应，都从这里被拾起":"Alle Antworten von Dream Corner wurden von hier abgerufen.","拾梦":"Holen Sie sich einen Traum","播放列表":"Wiedergabelisten","今天，也值得被记住":"Heute lohnt es sich auch, sich daran zu erinnern,","搜索任意县市或国家，选好后地图会自动连出一条线，并算出大概距离。":"Suchen Sie nach einem Landkreis oder einem Land, und die Karte verbindet automatisch eine Linie und berechnet die ungefähre Entfernung.","管理字卡库":"Wortkartenbibliothek verwalten","写下来，让他读过再收好":"Schreiben Sie es auf, lassen Sie es ihn lesen und legen Sie es weg","相册":"Alben","我发一条":"Ich schicke dir einen","梦角会接管黑方。落子之后，给他一点思考的时间。":"Dream Horn wird Black übernehmen.Gib ihm nach dem Sturz etwas Zeit zum Nachdenken.","张字卡":"Charakterkarten","导入壁纸":"Hintergrundbild importieren","把这里，变成更像你们的地方":"Mach diesen Ort mehr wie deinen.","预设主题":"Voreingestelltes Theme","主题与壁纸":"Themes \u0026 Wallpaper","AI 托管中":"KI-gehostet","添加":"Hinzufügen","在字卡里等你":"Warten auf Sie in der Wortkarte","音乐":"Musik","主页背景":"Startseite Hintergrund","状态签名":"Status Unterschrift","恢复默认":"Standardeinstellungen wiederherstellen","选择位置":"Standort auswählen","正在字卡里等你":"Warten auf Sie in der Wortkarte","扭蛋池":"Gacha Pool","文件导入":"Dateiimport","回复字号":"Antwort-Schriftgröße","我们":"Wir","悔棋":"Bedauernsschach","导入数据备份":"Datensicherung importieren","柔雾玻璃":"Weiches Nebelglas","柔和圆体":"Weicher runder Körper","棋局结束":"Ende des Spiels","五":"Fünf","文艺宋体":"Literarisches und künstlerisches Arial","月雾":"Mondnebel","游戏":"Spiele","朋友圈":"Momente","消耗 MiniMax 语音额度":"MiniMax-Sprachguthaben verbrauchen","让TA写一篇":"Lassen Sie TA einen Artikel schreiben","摆件":"Ornamente","更多":"Mehr","网站语言":"Website-Sprache","一起做过的事":"Was wir gemeinsam erreicht haben","你执红先行。点击棋子，再点一个亮点落子。":"Du hältst dich zuerst an Rot fest.Klicken Sie auf ein Token und dann auf eine Markierung.","天气":"Wetter","清除":"Löschen","再来一局":"Noch ein Spiel.","导入一首歌，或从歌单里选一首":"Importieren Sie einen Song oder wählen Sie einen aus Ihrer Wiedergabeliste aus","日记":"Tagebuch","东京":"Tokio","最近扭到":"Kürzlich verdreht zu","自定义页面强调色":"Benutzerdefinierte Seitenakzentfarbe","上海":"Shanghai","想和 TA 一起":"Ich möchte mit TA zusammenarbeiten","上滑解锁":"Zum Entsperren nach oben wischen","强调色":"Akzentfarbe","星夜霓虹":"Sternennacht Neon","干净黑体":"Fett säubern","纸感留白":"Leerzeichen auf Papier","导出我的数据":"Meine Daten exportieren","扭蛋":"Gacha","点此添加一个纪念日":"Klicken Sie hier, um ein Jubiläum hinzuzufügen","把今天的一小段时间，留给彼此":"Schenken Sie sich noch heute ein wenig Zeit","你写下字卡，梦角从中拾起一句回应。":"Du schreibst eine Kalligrafiekarte und die Traumecke nimmt eine Antwort von ihr auf.","图片":"Bild","邀请 TA 一起":"Laden Sie TA zusammen ein","同一片天空，不同的天气":"Gleicher Himmel, anderes Wetter","本地时间":"Ortszeit","翻译使用免费的在线翻译服务，失败时会退回原文。语音语言始终跟随上方「语言与翻译」里的选择。":"Translation verwendet einen kostenlosen Online-Übersetzungsdienst, der den Originaltext zurückgibt, wenn er fehlschlägt.Voice Language folgt immer der Auswahl in \"Sprache und Übersetzung\" oben.","收到回复时自动朗读":"Sprechen Sie automatisch, wenn Sie eine Antwort erhalten","自定义软件图标":"Benutzerdefinierte Software-Symbole","还没有日子":"Noch keine Tage","梦角":"Dream Point","我":"Ich","重开":"Wiedereröffnen","壁纸":"Tapete","把遥远的时差，折成一句晚安":"Falten Sie den fernen Jetlag in eine gute Nacht","DREAMCARD ARCHIVE / 拾梦数据档案 / NO.2049":"Dreamcard Archiv/TRAUMDATENARCHIV/NR.2049","聊天背景":"Chat-Hintergrund","遇到浏览器 CORS 时填写":"Füllen Sie es aus, wenn Sie auf Browser-CORS stoßen","做成摆件":"Stelle Ornamente her","象":"Elefant","写下的每一张字卡，都会被他拾起。":"Er nahm jede Karte auf, die er aufschrieb.","所有数据只保存在这台设备里。":"Alle Daten werden nur auf diesem Gerät gespeichert.","让这一晚，有背景音":"Lassen Sie diese Nacht einen Hintergrundgeräusch","恢复":"Wiederherstellen","还没有播放":"Noch nicht gespielt","数据与关于":"Daten und über","世界的此刻":"In diesem Moment auf der Welt","宋":"Lied","我们的日子":"Unsere Tage","高级 · 代理地址":"Erweitert · Proxy-Adresse","导入歌单":"Importieren einer Wiedergabeliste","正在读取天空的实时数据…":"Live-Daten vom Himmel lesen...","只属于你和梦角的小小广场":"Ein kleiner Platz nur für dich und die Ecke deiner Träume","试听梦角的声音":"Hören Sie den Klang von Dream Horn","随主题":"Mit Theme","中国象棋":"Chinesisches Schach","东京 21:00":"Tokio 21:00","看看今天梦角想对你说什么。":"Sehen Sie, was Dream Corner Ihnen heute sagen möchte.","梦角的名字":"Name des Traumhorns","收集和他有关的每一帧":"Sammle jeden Rahmen, der sich auf ihn bezieht","语录 · 小物 · 每日陪伴":"Angebot · Kleiner Gegenstand · Tägliche Begleitung","从梦角的口袋里，摇出一点小幸运":"Schütteln Sie ein wenig Glück aus der Tasche von Dream Horn","陪伴":"Begleitung","界面风格":"Schnittstellen-Stil","天":"Tage","正在连接天空…":"Verbindung zum Himmel wird hergestellt...","0 次相遇":"0 Begegnungen","这次多久":"Wie lange diese Zeit","旅人":"Gäste","切换后，界面文字会立即翻译成所选语言。你写的字卡、日记与消息保持原样。":"Nach dem Umschalten wird der Schnittstellentext sofort in die ausgewählte Sprache übersetzt.Die Karten, Tagebücher und Nachrichten, die Sie schreiben, bleiben gleich.","重新观看新手教程":"Einführung erneut ansehen","新手教程":"Einführung"},"en":{"和梦角一起，把日子过成一个小房间":"Make a little room for your days, together with your dream.","把心里的问题放在桌上，抽一张牌":"Put the question in your heart on the table and draw a card.","占卜":"Divination","把日子、生日和身体的小秘密放在一起":"Keep your days, birthdays and little body secrets together.","家园":"Home","猜数字":"Guess the Number","日历":"Calendar","10月24日 · 星期五 · 宜想念":"October 24th · Friday · Missing it","10月24日 · 星期五":"October 24th · Friday","轮到你":"It\u0027s your turn","我的小宇宙":"My Little Universe","字卡":"Word Card","和梦角下一局 · AI 托管":"And Dream Corner Next Round · AI Hosting","晚上好，":"Good evening,","扭一颗":"Twist one","梦角的口袋":"Dream Horn Pocket","我写一篇":"I\u0027ll write an article","月":"Month","我的名字":"My name","头像大小":"Avatar Size","星星":"Star","清空":"Clear","主题":"Subject","字卡内容保持原文":"Wordcard content remains in its original language","拾梦 · 梦角字卡":"Dream Pickup · Dream Corner Character Card","计时器":"Timer","连成五子":"Lian Cheng Wu Zi","导入歌曲":"Import Songs","清除全部本地数据":"Clear all local data","我的图片":"My Pictures","字卡库":"Word Card Library","管理":"Manage","添加城市":"Add city","AI 托管提示":"AI Hosting Tips","放入小物":"Put in small items","自定义背景与图标":"Custom Background \u0026 Icon","梦角那里 ·":"Dream Corner there ·","小物管理":"Small Goods Management","把想说的话，悄悄写进字卡里。":"Whisper what you want to say into the card.","0 张":"0 sheets","即使字卡是中文，也用设置里的语言朗读":"Read aloud in the language in the settings, even if the word card is in Chinese","我的小物":"My gadgets","把两颗心，连成一条看得见的线":"Connect the two hearts into a visible line","把想说的话，放在字卡里。":"Put what you want to say in the font card.","同一天":"Same day","星期五":"Friday","进入软件背景":"Enter Software Background","楚河汉界":"Chu River Han Realm","上传照片":"Upload photo","初局 · 0 胜 0 负":"First round · 0 wins 0 losses","把房间调成你喜欢的光线":"Turn the room into the light you like","语言与翻译":"Language \u0026 Translation","MiniMax 语音":"MiniMax Voice","扭一扭，":"Twist,","尚未填写 MiniMax 配置":"MiniMax configuration has not been filled in","设置":"Settings","还没有字卡。写下第一句想让梦角对你说的话吧。":"No word cards yet.Write down the first sentence you want Dream Angle to say to you.","地图":"Map","25 分钟":"25 minutes","表情包 · 我的收藏":"Emote · My Favorites","打开陪伴模式":"Turn on companionship mode","陪伴设置":"Companionship Settings","标记":"Flag","字体气质":"Font Temperament","显示与阅读":"Display \u0026 Reading","五子棋":"Wuzi Chess","黑":"Black","写下今天的心情或小事，梦角会从你的字卡里挑一句，作为他的回信夹在日记里。":"Write down today\u0027s mood or little thing, and the dream corner will pick a sentence from your word card as his reply letter in his diary.","语录 100% · 小物 0%":"Quote 100% · Small 0%","语录池已备好":"Quote Pool Ready","深夜里的一层薄雾。适合把心事写得很轻，再交给梦角收好。":"A layer of mist in the middle of the night.It is suitable for writing down your thoughts very lightly, and then handing them over to the dream corner to be put away.","拾梦需要启用 JavaScript 才能运行。请允许 JavaScript 后刷新页面。":"Dreampicker requires JavaScript enabled to run.Please allow JavaScript to refresh the page.","朗读前先翻译成所选语言":"Translate to selected language before reading","圆":"Circle","让梦角抽字卡发一条":"Let Dream Corner draw a card","时间":"Time","梦角所有的回应，都从这里被拾起":"All the responses of Dream Corner were picked up from here.","拾梦":"Pick up a dream","播放列表":"Playlists","今天，也值得被记住":"Today, it is also worth remembering","搜索任意县市或国家，选好后地图会自动连出一条线，并算出大概距离。":"Search for any county or country, and the map will automatically connect a line and calculate the approximate distance.","管理字卡库":"Manage Word Card Library","写下来，让他读过再收好":"Write it down, let him read it and put it away","相册":"Albums","我发一条":"I\u0027ll send one","梦角会接管黑方。落子之后，给他一点思考的时间。":"Dream Horn will take over Black.After falling, give him some time to think.","张字卡":"Character Cards","导入壁纸":"Import Wallpaper","把这里，变成更像你们的地方":"Make this place more like yours.","预设主题":"Preset Theme","主题与壁纸":"Themes \u0026 Wallpapers","AI 托管中":"AI hosted","添加":"Add","在字卡里等你":"Waiting for you in the word card","音乐":"Music","主页背景":"Home Background","状态签名":"Status Signature","恢复默认":"Restore Defaults","选择位置":"Select location","正在字卡里等你":"Waiting for you in the word card","扭蛋池":"Gacha Pool","文件导入":"File Import","回复字号":"Reply Font Size","我们":"We","悔棋":"Regret Chess","导入数据备份":"Import Data Backup","柔雾玻璃":"Soft Mist Glass","柔和圆体":"Soft round body","棋局结束":"End OF the game","五":"Five","文艺宋体":"Literary and Artistic Arial","月雾":"Moon Fog","游戏":"Games","朋友圈":"Moments","消耗 MiniMax 语音额度":"Consume MiniMax voice credits","让TA写一篇":"Let TA write an article","摆件":"Ornaments","更多":"More","网站语言":"Website Language","一起做过的事":"What we\u0027ve done together","你执红先行。点击棋子，再点一个亮点落子。":"You hold on to red first.Click on a token, then click on a highlight.","天气":"Weather","清除":"Clear","再来一局":"One more game.","导入一首歌，或从歌单里选一首":"Import a song or pick one from your playlist","日记":"Diary","东京":"Tokyo","最近扭到":"Recently twisted to","自定义页面强调色":"Custom page accent color","上海":"Shanghai","想和 TA 一起":"I want to work with TA","上滑解锁":"Swipe Up to Unlock","强调色":"Accent color","星夜霓虹":"Starry Night Neon","干净黑体":"Clean Bold","纸感留白":"Whitespace on paper","导出我的数据":"Export my data","扭蛋":"Gacha","点此添加一个纪念日":"Click here to add an anniversary","把今天的一小段时间，留给彼此":"Give each other a little time today","你写下字卡，梦角从中拾起一句回应。":"You write a calligraphy card, and the dream corner picks up a response from it.","图片":"Image","邀请 TA 一起":"Invite TA together","同一片天空，不同的天气":"Same sky, different weather","本地时间":"Local time","翻译使用免费的在线翻译服务，失败时会退回原文。语音语言始终跟随上方「语言与翻译」里的选择。":"Translation uses a free online translation service that returns the original text if it fails.Voice language always follows the selection in “Language and Translation” above.","收到回复时自动朗读":"Speak automatically when you receive a response","自定义软件图标":"Custom Software Icons","还没有日子":"No days yet","梦角":"Dream Point","我":"Me","重开":"Reopen","壁纸":"Wallpaper","把遥远的时差，折成一句晚安":"Fold the distant jet lag into a good night","DREAMCARD ARCHIVE / 拾梦数据档案 / NO.2049":"Dreamcard archive/dream data archive/NO.2049","聊天背景":"Chat Background","遇到浏览器 CORS 时填写":"Fill in when encountering browser CORS","做成摆件":"Make ornaments","象":"Elephant","写下的每一张字卡，都会被他拾起。":"He would pick up every card he wrote down.","所有数据只保存在这台设备里。":"All data is saved in this device only.","让这一晚，有背景音":"Let this night have a background sound","恢复":"Restore","还没有播放":"Not played yet","数据与关于":"Data and about","世界的此刻":"At this moment in the world","宋":"Song","我们的日子":"Our days","高级 · 代理地址":"Advanced · Proxy address","导入歌单":"Importing a playlist","正在读取天空的实时数据…":"Reading live data from the sky…","只属于你和梦角的小小广场":"A small square just for you and the corner of your dreams","试听梦角的声音":"Listen to the sound of Dream Horn","随主题":"With Theme","中国象棋":"Chinese Chess","东京 21:00":"Tokyo 21:00","看看今天梦角想对你说什么。":"See what Dream Corner wants to say to you today.","梦角的名字":"Name of Dream Horn","收集和他有关的每一帧":"Collect every frame related to him","语录 · 小物 · 每日陪伴":"Quote · Small Item · Daily Companionship","从梦角的口袋里，摇出一点小幸运":"Shake a little luck out of the pocket of Dream Horn","陪伴":"Companionship","界面风格":"Interface style","天":"days","正在连接天空…":"Connecting to the sky...","0 次相遇":"0 encounters","这次多久":"How long this time","旅人":"Guests","切换后，界面文字会立即翻译成所选语言。你写的字卡、日记与消息保持原样。":"Once switched, the interface text is immediately translated into the selected language.The cards, journals, and messages you write remain the same.","重新观看新手教程":"Replay the beginner tutorial","新手教程":"Beginner tutorial"},"ru":{"和梦角一起，把日子过成一个小房间":"Превратите свои дни в маленькую комнату вместе с мечтой.","把心里的问题放在桌上，抽一张牌":"Положите вопрос из сердца на стол и вытяните карту.","占卜":"Гадание","把日子、生日和身体的小秘密放在一起":"Соберите вместе дни, дни рождения и маленькие тайны тела.","家园":"Дом","猜数字":"Угадай число","日历":"Календарь","10月24日 · 星期五 · 宜想念":"24 октября · Пятница · Скучаю","10月24日 · 星期五":"24 октября · Пятница","轮到你":"Твоя очередь","我的小宇宙":"Моя маленькая вселенная","字卡":"Карточка слова","和梦角下一局 · AI 托管":"И Dream Corner в следующем раунде · ИИ-хостинг","晚上好，":"Добрый вечер,","扭一颗":"Twist One","梦角的口袋":"Карманный рожок мечты","我写一篇":"Я напишу статью","月":"Месяц","我的名字":"Мое имя","头像大小":"Размер аватара","星星":"Звезда","清空":"Очистить","主题":"Тема","字卡内容保持原文":"Контент Wordcard остается на языке оригинала","拾梦 · 梦角字卡":"Пикап мечты · Карточка персонажа Dream Corner","计时器":"Таймер","连成五子":"Лянь Чэн У Цзы","导入歌曲":"Импортировать песни","清除全部本地数据":"Очистить все локальные данные","我的图片":"Мои рисунки","字卡库":"Библиотека карточек слов","管理":"Управление","添加城市":"Добавить город","AI 托管提示":"Советы по ИИ-хостингу","放入小物":"Положить в мелкие предметы","自定义背景与图标":"Пользовательский фон и значок","梦角那里 ·":"Dream Corner there ·","小物管理":"Управление мелкими товарами","把想说的话，悄悄写进字卡里。":"Прошепчи на карточке то, что хочешь сказать.","0 张":"0 листов","即使字卡是中文，也用设置里的语言朗读":"Читать вслух на языке в настройках, даже если карточка слова на китайском","我的小物":"Мои гаджеты","把两颗心，连成一条看得见的线":"Соедините два сердца в видимую линию","把想说的话，放在字卡里。":"Поместите то, что вы хотите сказать, в карточку шрифта.","同一天":"В тот же день","星期五":"Пятница","进入软件背景":"Введите фон программного обеспечения","楚河汉界":"Царство Хань реки Чу","上传照片":"Загрузить фото","初局 · 0 胜 0 负":"Первый раунд · 0 побед 0 поражений","把房间调成你喜欢的光线":"Превратите комнату в свет, который вам нравится","语言与翻译":"Язык и перевод","MiniMax 语音":"MiniMax Voice","扭一扭，":"Твист,","尚未填写 MiniMax 配置":"Конфигурация MiniMax не была заполнена","设置":"Настройки","还没有字卡。写下第一句想让梦角对你说的话吧。":"Пока нет карточек со словами.Запишите первое предложение, которое вы хотите услышать от Dream Angle.","地图":"Карта","25 分钟":"25 минут","表情包 · 我的收藏":"Эмоция · Мои избранные","打开陪伴模式":"Включить режим общения","陪伴设置":"Настройки общения","标记":"Флаг","字体气质":"Темперамент шрифта","显示与阅读":"Отображение и чтение","五子棋":"Wuzi Chess","黑":"Черный","写下今天的心情或小事，梦角会从你的字卡里挑一句，作为他的回信夹在日记里。":"Запишите сегодняшнее настроение или мелочь, и уголок сна выберет предложение из вашей карточки слов в качестве своего ответного письма в своем дневнике.","语录 100% · 小物 0%":"Цитата 100% · Маленький 0%","语录池已备好":"Пул расценок готов","深夜里的一层薄雾。适合把心事写得很轻，再交给梦角收好。":"Слой тумана посреди ночи.Он подходит для того, чтобы очень легко записывать свои мысли, а затем передавать их в угол мечты, чтобы их убрали.","拾梦需要启用 JavaScript 才能运行。请允许 JavaScript 后刷新页面。":"Для работы Dreampicker требуется включенный JavaScript.Разрешите JavaScript обновить страницу.","朗读前先翻译成所选语言":"Перевести на выбранный язык перед чтением","圆":"Круг","让梦角抽字卡发一条":"Позвольте Dream Corner взять карту","时间":"Время","梦角所有的回应，都从这里被拾起":"Все ответы Dream Corner были подобраны отсюда.","拾梦":"Возьмите мечту","播放列表":"Плейлисты","今天，也值得被记住":"Сегодня также стоит вспомнить","搜索任意县市或国家，选好后地图会自动连出一条线，并算出大概距离。":"Найдите любой округ или страну, и карта автоматически соединит линию и рассчитает приблизительное расстояние.","管理字卡库":"Управление библиотекой карточек Word","写下来，让他读过再收好":"Запишите, пусть прочитает и уберет","相册":"Альбомы","我发一条":"Я отправлю один","梦角会接管黑方。落子之后，给他一点思考的时间。":"Dream Horn возьмет верх над Black.После падения дайте ему время подумать.","张字卡":"Карточки персонажей","导入壁纸":"Импорт обоев","把这里，变成更像你们的地方":"Сделайте это жилье похожим на ваше.","预设主题":"Предустановленная тема","主题与壁纸":"Темы и обои","AI 托管中":"ИИ-хостинг","添加":"Добавить","在字卡里等你":"Жду тебя в карточке слова","音乐":"Музыка","主页背景":"Справочная информация о жилье","状态签名":"Статус Подпись","恢复默认":"Восстановить значения по умолчанию","选择位置":"Выберите местоположение","正在字卡里等你":"Жду тебя в карточке слова","扭蛋池":"Бассейн Гача","文件导入":"Импорт файлов","回复字号":"Размер шрифта ответа","我们":"Мы","悔棋":"Сожалеем о шахматах","导入数据备份":"Импорт резервной копии данных","柔雾玻璃":"Мягкое туманное стекло","柔和圆体":"Мягкий круглый корпус","棋局结束":"Конец игры","五":"Пять","文艺宋体":"Литературно-художественный Arial","月雾":"Лунный туман","游戏":"Игры","朋友圈":"Моменты","消耗 MiniMax 语音额度":"Использовать голосовые кредиты MiniMax","让TA写一篇":"Пусть ЦА напишет статью","摆件":"Украшения","更多":"Еще","网站语言":"Язык веб-сайта","一起做过的事":"Что мы сделали вместе","你执红先行。点击棋子，再点一个亮点落子。":"Сначала держись за красный.Нажмите на маркер, а затем нажмите на выделение.","天气":"Погода","清除":"Очистить","再来一局":"Еще одна игра.","导入一首歌，或从歌单里选一首":"Импортируйте песню или выберите ее из плейлиста","日记":"Дневник","东京":"Токио","最近扭到":"Недавно скрученный в","自定义页面强调色":"Пользовательский цвет акцента страницы","上海":"Шанхай","想和 TA 一起":"Хочу работать с ЦА","上滑解锁":"Проведите пальцем вверх, чтобы разблокировать","强调色":"Цвет акцента","星夜霓虹":"Неон «Звездная ночь»","干净黑体":"Чистый полужирный","纸感留白":"Пробел на бумаге","导出我的数据":"Экспортировать мои данные","扭蛋":"Гача","点此添加一个纪念日":"Нажмите здесь, чтобы добавить годовщину","把今天的一小段时间，留给彼此":"Дайте друг другу немного времени сегодня","你写下字卡，梦角从中拾起一句回应。":"Вы пишете каллиграфическую открытку, и уголок мечты подбирает отклик от нее.","图片":"Изображение","邀请 TA 一起":"Пригласите ЦА вместе","同一片天空，不同的天气":"То же небо, другая погода","本地时间":"Местное время","翻译使用免费的在线翻译服务，失败时会退回原文。语音语言始终跟随上方「语言与翻译」里的选择。":"Перевод использует бесплатный онлайн-сервис перевода, который возвращает исходный текст, если он терпит неудачу.Язык голоса всегда следует за выбором в разделе «Язык и перевод» выше.","收到回复时自动朗读":"Говорите автоматически, когда получаете ответ","自定义软件图标":"Пользовательские значки программного обеспечения","还没有日子":"Дней пока нет","梦角":"Dream Point","我":"Я","重开":"Открыть заново","壁纸":"Обои","把遥远的时差，折成一句晚安":"Сложите дальнюю смену часовых поясов в спокойную ночь","DREAMCARD ARCHIVE / 拾梦数据档案 / NO.2049":"Архив Dreamcard/архив данных Dream/№ 2049","聊天背景":"Фон чата","遇到浏览器 CORS 时填写":"Заполните при обнаружении CORS браузера","做成摆件":"Делайте украшения","象":"Слон","写下的每一张字卡，都会被他拾起。":"Он забирал каждую открытку, которую записывал.","所有数据只保存在这台设备里。":"Все данные сохраняются только на этом устройстве.","让这一晚，有背景音":"Позвольте этой ночи иметь фоновый звук","恢复":"Восстановить","还没有播放":"Еще не сыграно","数据与关于":"Данные и около","世界的此刻":"В этот момент в мире","宋":"Песня","我们的日子":"Наши дни","高级 · 代理地址":"Дополнительно · Адрес прокси-сервера","导入歌单":"Импорт плейлиста","正在读取天空的实时数据…":"Чтение данных в реальном времени с неба...","只属于你和梦角的小小广场":"Небольшая площадь только для вас и уголок вашей мечты","试听梦角的声音":"Слушайте звук Dream Horn","随主题":"С темой","中国象棋":"Китайские шахматы","东京 21:00":"Токио 21:00","看看今天梦角想对你说什么。":"Посмотрите, что Dream Corner хочет сказать вам сегодня.","梦角的名字":"Название Dream Horn","收集和他有关的每一帧":"Соберите все кадры, связанные с ним","语录 · 小物 · 每日陪伴":"Цитата · Маленький предмет · Ежедневное общение","从梦角的口袋里，摇出一点小幸运":"Вытрясите немного удачи из кармана Dream Horn","陪伴":"Общение","界面风格":"Стиль интерфейса","天":"дней","正在连接天空…":"Соединение с небом...","0 次相遇":"0 встреч","这次多久":"Как долго на этот раз","旅人":"Гости","切换后，界面文字会立即翻译成所选语言。你写的字卡、日记与消息保持原样。":"После переключения текст интерфейса немедленно переводится на выбранный язык.Карточки, журналы и сообщения, которые вы пишете, остаются прежними.","重新观看新手教程":"Посмотреть обучение снова","新手教程":"Обучение"},"es":{"和梦角一起，把日子过成一个小房间":"Convierte tus días en una pequeña habitación, junto a tu sueño.","把心里的问题放在桌上，抽一张牌":"Pon sobre la mesa la pregunta de tu corazón y saca una carta.","占卜":"Adivinación","把日子、生日和身体的小秘密放在一起":"Reúne tus días, cumpleaños y los pequeños secretos del cuerpo.","家园":"Hogar","猜数字":"Adivina el número","日历":"Calendario","10月24日 · 星期五 · 宜想念":"24 de octubre · Viernes · Falta","10月24日 · 星期五":"24 de octubre · Viernes","轮到你":"Es tu turno","我的小宇宙":"My Little Universe","字卡":"Tarjeta de palabras","和梦角下一局 · AI 托管":"And Dream Corner Next Round · Alojamiento con IA","晚上好，":"Buenas noches,","扭一颗":"Twist One","梦角的口袋":"Bolsillo de cuerno de ensueño","我写一篇":"Escribiré un artículo","月":"Mes","我的名字":"Mi nombre","头像大小":"Tamaño del avatar","星星":"Estrella","清空":"Borrar","主题":"Asunto","字卡内容保持原文":"El contenido de la tarjeta de palabras permanece en su idioma original","拾梦 · 梦角字卡":"Recogida de sueños · Tarjeta de personaje de Dream Corner","计时器":"Temporizador","连成五子":"Lian Cheng Wu Zi","导入歌曲":"Importar canciones","清除全部本地数据":"Borrar todos los datos locales","我的图片":"Mis imágenes","字卡库":"Biblioteca de tarjetas de palabras","管理":"Gestionar","添加城市":"Añadir ciudad","AI 托管提示":"Consejos para anfitriones con IA","放入小物":"Coloca artículos pequeños","自定义背景与图标":"Fondo e icono personalizados","梦角那里 ·":"Dream Corner allí ·","小物管理":"Gestión de Pequeñas Mercancías","把想说的话，悄悄写进字卡里。":"Susurra lo que quieres decir en la tarjeta.","0 张":"0 hojas","即使字卡是中文，也用设置里的语言朗读":"Leer en voz alta en el idioma en la configuración, incluso si la tarjeta de palabras está en chino","我的小物":"Mis gadgets","把两颗心，连成一条看得见的线":"Conecta los dos corazones en una línea visible","把想说的话，放在字卡里。":"Ponga lo que quiere decir en la tarjeta de fuentes.","同一天":"El mismo día","星期五":"Viernes","进入软件背景":"Introduzca el fondo del software","楚河汉界":"Reino Han del río Chu","上传照片":"Subir foto","初局 · 0 胜 0 负":"Primera ronda · 0 victorias 0 derrotas","把房间调成你喜欢的光线":"Convierte la habitación en la luz que más te guste","语言与翻译":"Idioma y traducción","MiniMax 语音":"MiniMax Voice","扭一扭，":"Twist,","尚未填写 MiniMax 配置":"La configuración de MiniMax no se ha completado","设置":"Ajustes","还没有字卡。写下第一句想让梦角对你说的话吧。":"Todavía no hay tarjetas de palabras.Escribe la primera oración que quieres que Dream Angle te diga.","地图":"Mapa","25 分钟":"25 minutos","表情包 · 我的收藏":"Gesto · Mis favoritos","打开陪伴模式":"Activar el modo de compañerismo","陪伴设置":"Configuración de Acompañamiento","标记":"Marcar","字体气质":"Temperamento de la fuente","显示与阅读":"Mostrar y leer","五子棋":"Ajedrez wuzi","黑":"Negro","写下今天的心情或小事，梦角会从你的字卡里挑一句，作为他的回信夹在日记里。":"Escriba el estado de ánimo de hoy o algo pequeño, y el rincón de los sueños elegirá una oración de su tarjeta de palabras como su carta de respuesta en su diario.","语录 100% · 小物 0%":"Presupuesto 100% · Pequeño 0%","语录池已备好":"Grupo de presupuestos listo","深夜里的一层薄雾。适合把心事写得很轻，再交给梦角收好。":"Una capa de niebla en medio de la noche.Es adecuado para escribir tus pensamientos a la ligera y luego entregarlos al rincón de los sueños para que los guardes.","拾梦需要启用 JavaScript 才能运行。请允许 JavaScript 后刷新页面。":"Dreampicker requiere JavaScript habilitado para ejecutarse.Por favor, permita que JavaScript actualice la página.","朗读前先翻译成所选语言":"Traducir al idioma seleccionado antes de leer","圆":"Círculo","让梦角抽字卡发一条":"Deja que Dream Corner robe una carta","时间":"Hora","梦角所有的回应，都从这里被拾起":"Todas las respuestas de Dream Corner fueron recogidas desde aquí.","拾梦":"Recoge un sueño","播放列表":"Listas de reproducción","今天，也值得被记住":"Hoy en día, también vale la pena recordar","搜索任意县市或国家，选好后地图会自动连出一条线，并算出大概距离。":"Busca cualquier condado o país, y el mapa conectará automáticamente una línea y calculará la distancia aproximada.","管理字卡库":"Gestionar la biblioteca de tarjetas de palabras","写下来，让他读过再收好":"Escríbelo, déjalo leerlo y guárdalo","相册":"Álbumes","我发一条":"Enviaré uno","梦角会接管黑方。落子之后，给他一点思考的时间。":"Dream Horn se hará cargo de Black.Después de caer, dale tiempo para pensar.","张字卡":"Tarjetas de personaje","导入壁纸":"Importar fondo de pantalla","把这里，变成更像你们的地方":"Haz que este lugar sea más como el tuyo.","预设主题":"Tema preestablecido","主题与壁纸":"Temas y fondos de pantalla","AI 托管中":"AI alojado","添加":"Añadir","在字卡里等你":"Esperándote en la tarjeta de palabras","音乐":"Música","主页背景":"Fondo del alojamiento","状态签名":"Firma del estado","恢复默认":"Restaurar valores predeterminados","选择位置":"Seleccionar ubicación","正在字卡里等你":"Esperándote en la tarjeta de palabras","扭蛋池":"Gacha Pool","文件导入":"Importación de archivos","回复字号":"Tamaño de fuente de respuesta","我们":"Nosotros","悔棋":"Arrepentimiento Ajedrez","导入数据备份":"Importar copia de seguridad de datos","柔雾玻璃":"Vidrio de niebla suave","柔和圆体":"Cuerpo redondo suave","棋局结束":"Fin del juego","五":"Cinco","文艺宋体":"Literaria y Artística Arial","月雾":"Niebla lunar","游戏":"Juegos","朋友圈":"Momentos","消耗 MiniMax 语音额度":"Consumir créditos de voz MiniMax","让TA写一篇":"Deje que TA escriba un artículo","摆件":"Adornos","更多":"Más","网站语言":"Idioma del sitio web","一起做过的事":"Lo que hemos hecho juntos","你执红先行。点击棋子，再点一个亮点落子。":"Primero te aferras al rojo.Haz clic en un token y, a continuación, haz clic en un punto destacado.","天气":"Clima","清除":"Borrar","再来一局":"Una partida más.","导入一首歌，或从歌单里选一首":"Importa una canción o elige una de tu lista de reproducción","日记":"Diario","东京":"Tokio","最近扭到":"Recientemente torcido a","自定义页面强调色":"Color de acento de página personalizado","上海":"Shanghái","想和 TA 一起":"Quiero trabajar con TA","上滑解锁":"Desliza hacia arriba para desbloquear","强调色":"Color de acento","星夜霓虹":"Noche estrellada de neón","干净黑体":"Clean Bold","纸感留白":"Espacios en blanco sobre papel","导出我的数据":"Exportar mis datos","扭蛋":"Gacha","点此添加一个纪念日":"Haz clic aquí para añadir un aniversario","把今天的一小段时间，留给彼此":"Dense un poco de tiempo el uno al otro hoy","你写下字卡，梦角从中拾起一句回应。":"Escribes una tarjeta de caligrafía y el rincón de los sueños recibe una respuesta de ella.","图片":"Imagen","邀请 TA 一起":"Invitar a TA juntos","同一片天空，不同的天气":"Mismo cielo, clima diferente","本地时间":"Hora local","翻译使用免费的在线翻译服务，失败时会退回原文。语音语言始终跟随上方「语言与翻译」里的选择。":"Translation utiliza un servicio de traducción en línea gratuito que devuelve el texto original si falla.El idioma de voz siempre sigue la selección en \"Idioma y traducción\" anterior.","收到回复时自动朗读":"Habla automáticamente cuando recibas una respuesta","自定义软件图标":"Iconos de software personalizados","还没有日子":"Aún no hay días","梦角":"Dream Point","我":"Me","重开":"Reabrir","壁纸":"Fondo de pantalla","把遥远的时差，折成一句晚安":"Dobla el jet lag distante en una buena noche","DREAMCARD ARCHIVE / 拾梦数据档案 / NO.2049":"Archivo Dreamcard/archivo DE datos Dream/NO.2049","聊天背景":"Fondo del chat","遇到浏览器 CORS 时填写":"Rellenar cuando se encuentre con el CORS del navegador","做成摆件":"Hacer adornos","象":"Elefante","写下的每一张字卡，都会被他拾起。":"Recogía cada tarjeta que escribía.","所有数据只保存在这台设备里。":"Todos los datos se guardan solo en este dispositivo.","让这一晚，有背景音":"Deja que esta noche tenga un sonido de fondo","恢复":"Restaurar","还没有播放":"Aún no se ha jugado","数据与关于":"Datos y sobre","世界的此刻":"En este momento en el mundo","宋":"Canción","我们的日子":"Nuestros días","高级 · 代理地址":"Avanzado · Dirección proxy","导入歌单":"Importar una lista de reproducción","正在读取天空的实时数据…":"Leyendo datos en vivo desde el cielo...","只属于你和梦角的小小广场":"Un pequeño cuadrado solo para ti y el rincón de tus sueños","试听梦角的声音":"Escucha el sonido de Dream Horn","随主题":"Con tema","中国象棋":"Ajedrez chino","东京 21:00":"Tokio 21:00","看看今天梦角想对你说什么。":"Mira lo que Dream Corner quiere decirte hoy.","梦角的名字":"Nombre de Dream Horn","收集和他有关的每一帧":"Recoge todos los marcos relacionados con él","语录 · 小物 · 每日陪伴":"Presupuesto · Artículo pequeño · Acompañamiento diario","从梦角的口袋里，摇出一点小幸运":"Sacude un poco de suerte del bolsillo de Dream Horn","陪伴":"Acompañamiento","界面风格":"Estilo de interfaz","天":"días","正在连接天空…":"Conectando con el cielo...","0 次相遇":"0 encuentros","这次多久":"Cuánto tiempo esta vez","旅人":"Huéspedes","切换后，界面文字会立即翻译成所选语言。你写的字卡、日记与消息保持原样。":"Una vez cambiado, el texto de la interfaz se traduce inmediatamente al idioma seleccionado.Las tarjetas, diarios y mensajes que escribes siguen siendo los mismos.","重新观看新手教程":"Ver tutorial de inicio de nuevo","新手教程":"Tutorial de inicio"}};
+
+  // 清理早期词典里带 “AI” 的旧条目：界面不再使用这个词
+  Object.keys(I18N_CORE).forEach(lang => {
+    const dict = I18N_CORE[lang];
+    if (!dict || typeof dict !== 'object') return;
+    Object.keys(dict).forEach(key => {
+      if (/(^|[^A-Za-z])AI([^A-Za-z]|$)/.test(key) || /(^|[^A-Za-z])AI([^A-Za-z]|$)/.test(String(dict[key] || ''))) delete dict[key];
+    });
+  });
 
   const I18N_TTS = {
     en: {
@@ -5063,6 +5079,127 @@ body.cropper-open { overflow: hidden; }
     if (!I18N_CORE[lang]) I18N_CORE[lang] = {};
     I18N_FEATURE_ROWS[lang].forEach((value, index) => {
       const key = I18N_FEATURE_KEYS[index];
+      if (key && value) I18N_CORE[lang][key] = value;
+    });
+  });
+
+  /* 一起看 / 撤回 / 猜数字 的新界面文案 */
+  const I18N_EXTRA_KEYS = [
+    '一起看', '把想看的片子放进来，和梦角并肩坐一会儿', '视频链接',
+    '粘贴哔哩哔哩链接，或 .mp4 / .m3u8 直链', '播放',
+    '支持哔哩哔哩视频、直接视频链接，以及大多数公开的网页播放器。VIP / DRM 内容需要在原平台解锁后才能看。',
+    '邀请梦角一起看', '梦角已加入', '还没有选片子', '粘贴一个链接，就能开始',
+    '未开始', '已就绪', '转动视角', '竖屏', '横屏', '全屏', '投屏', '播放说明', '小提示',
+    '坐在你旁边，一起看。', '撤回', '你撤回了一条内容，', '重新编辑', '撤回了一条字卡',
+    '轮到你猜', '猜一个数',
+    '你和梦角轮流猜同一个 1 到 100 的数字，先猜中的人赢。每次猜完，范围都会缩小一点。',
+    '正在想', '本局已结束', '正在播放', '视频'
+  ];
+  const I18N_EXTRA_ROWS = {
+    en: [
+      'Watch together', 'Put on something you want to see and sit beside your dream for a while.', 'Video link',
+      'Paste a Bilibili link, or a direct .mp4 / .m3u8 URL', 'Play',
+      'Bilibili videos, direct video links, and most public web players are supported. VIP / DRM content must be unlocked on its original platform first.',
+      'Invite Dream to watch', 'Dream has joined', 'No video yet', 'Paste a link to begin',
+      'Not started', 'Ready', 'Rotate view', 'Portrait', 'Landscape', 'Fullscreen', 'Cast',
+      'Playback help', 'Tip', 'Sitting right beside you.', 'Recall', 'You recalled a message, ',
+      'edit again', 'recalled a word card', 'Your turn to guess', 'Guess a number',
+      'You and Dream take turns guessing the same number from 1 to 100. Whoever hits it first wins, and the range shrinks with every guess.',
+      'Thinking', 'Round over', 'Now playing', 'Video'
+    ],
+    ja: [
+      '一緒に見る', '見たい作品を入れて、夢角と並んで少し過ごそう。', '動画リンク',
+      'ビリビリのリンク、または .mp4 / .m3u8 の直リンクを貼ってください', '再生',
+      'ビリビリ動画、直接の動画リンク、ほとんどの公開Webプレーヤーに対応しています。VIP / DRM コンテンツは元のサービスで解除が必要です。',
+      '夢角を誘って一緒に見る', '夢角が参加しました', 'まだ作品がありません', 'リンクを貼れば始められます',
+      '未開始', '準備完了', '視点を回転', '縦画面', '横画面', '全画面', 'キャスト',
+      '再生の説明', 'ヒント', 'あなたの隣に座って、一緒に見ています。', '撤回', 'メッセージを撤回しました、',
+      'もう一度編集', 'がカードを撤回しました', 'あなたの番です', '数字を当ててください',
+      'あなたと夢角が同じ1〜100の数字を交互に当てます。先に当てた人の勝ちで、当てるたびに範囲が狭まります。',
+      '考え中', 'この局は終了', '再生中', '動画'
+    ],
+    ko: [
+      '같이 보기', '보고 싶은 작품을 넣고 꿈각과 나란히 잠시 앉아 있어요.', '영상 링크',
+      '빌리빌리 링크 또는 .mp4 / .m3u8 직링크를 붙여넣으세요', '재생',
+      '빌리빌리 영상, 직접 영상 링크, 대부분의 공개 웹 플레이어를 지원합니다. VIP / DRM 콘텐츠는 원래 플랫폼에서 먼저 해제해야 합니다.',
+      '꿈각을 초대해 같이 보기', '꿈각이 함께합니다', '아직 작품이 없어요', '링크를 붙여넣으면 시작할 수 있어요',
+      '시작 전', '준비됨', '시점 회전', '세로 화면', '가로 화면', '전체 화면', '화면 전송',
+      '재생 안내', '팁', '네 옆에 앉아 같이 보고 있어.', '철회', '메시지를 철회했어요, ',
+      '다시 편집', '이(가) 카드를 철회했어요', '네 차례야', '숫자를 맞혀 봐',
+      '너와 꿈각이 1부터 100까지 같은 숫자를 번갈아 맞혀요. 먼저 맞힌 사람이 이기고, 추측할 때마다 범위가 줄어요.',
+      '생각 중', '이번 판 종료', '재생 중', '영상'
+    ],
+    ru: [
+      'Смотреть вместе', 'Вставь то, что хочешь посмотреть, и посиди рядом с мечтой.', 'Ссылка на видео',
+      'Вставь ссылку Bilibili или прямую ссылку .mp4 / .m3u8', 'Смотреть',
+      'Поддерживаются видео Bilibili, прямые ссылки и большинство открытых веб-плееров. Контент VIP / DRM нужно сначала разблокировать на исходной платформе.',
+      'Пригласить мечту смотреть', 'Мечта присоединилась', 'Пока нет видео', 'Вставь ссылку, чтобы начать',
+      'Не начато', 'Готово', 'Повернуть вид', 'Портрет', 'Альбом', 'На весь экран', 'Трансляция',
+      'Помощь по воспроизведению', 'Подсказка', 'Сижу рядом и смотрю вместе с тобой.', 'Отозвать',
+      'Ты отозвал сообщение, ', 'изменить', 'отозвал карточку', 'Твой ход', 'Угадай число',
+      'Ты и мечта по очереди угадываете одно число от 1 до 100. Кто угадает первым, тот победит, а диапазон сужается с каждой попыткой.',
+      'Думает', 'Раунд окончен', 'Сейчас играет', 'Видео'
+    ],
+    fr: [
+      'Regarder ensemble', 'Mets ce que tu veux voir et reste un moment à côté de ton rêve.', 'Lien vidéo',
+      'Colle un lien Bilibili, ou un lien direct .mp4 / .m3u8', 'Lire',
+      'Les vidéos Bilibili, les liens directs et la plupart des lecteurs web publics sont pris en charge. Les contenus VIP / DRM doivent d\'abord être débloqués sur leur plateforme.',
+      'Inviter Dream à regarder', 'Dream a rejoint', 'Aucune vidéo pour l\'instant', 'Colle un lien pour commencer',
+      'Pas commencé', 'Prêt', 'Pivoter la vue', 'Portrait', 'Paysage', 'Plein écran', 'Diffuser',
+      'Aide de lecture', 'Astuce', 'Assis juste à côté de toi.', 'Retirer', 'Tu as retiré un message, ',
+      'modifier', 'a retiré une carte', 'À toi de deviner', 'Devine un nombre',
+      'Toi et Dream devinez tour à tour le même nombre de 1 à 100. Le premier qui tombe dessus gagne, et la plage se réduit à chaque essai.',
+      'Réfléchit', 'Manche terminée', 'Lecture en cours', 'Vidéo'
+    ],
+    de: [
+      'Zusammen ansehen', 'Leg etwas ein, das du sehen willst, und sitze eine Weile neben deinem Traum.', 'Videolink',
+      'Bilibili-Link oder direkten .mp4-/.m3u8-Link einfügen', 'Abspielen',
+      'Bilibili-Videos, direkte Videolinks und die meisten öffentlichen Web-Player werden unterstützt. VIP-/DRM-Inhalte müssen zuerst auf der Originalplattform freigeschaltet werden.',
+      'Traum zum Ansehen einladen', 'Traum ist dabei', 'Noch kein Video', 'Link einfügen und loslegen',
+      'Nicht gestartet', 'Bereit', 'Ansicht drehen', 'Hochformat', 'Querformat', 'Vollbild', 'Übertragen',
+      'Wiedergabehilfe', 'Tipp', 'Sitzt direkt neben dir.', 'Zurückziehen', 'Du hast eine Nachricht zurückgezogen, ',
+      'erneut bearbeiten', 'hat eine Karte zurückgezogen', 'Du bist dran', 'Rate eine Zahl',
+      'Du und Traum raten abwechselnd dieselbe Zahl von 1 bis 100. Wer sie zuerst trifft, gewinnt, und der Bereich wird mit jedem Versuch kleiner.',
+      'Denkt nach', 'Runde beendet', 'Läuft gerade', 'Video'
+    ],
+    es: [
+      'Ver juntos', 'Pon algo que quieras ver y quédate un rato junto a tu sueño.', 'Enlace de vídeo',
+      'Pega un enlace de Bilibili o un enlace directo .mp4 / .m3u8', 'Reproducir',
+      'Se admiten vídeos de Bilibili, enlaces directos y la mayoría de reproductores web públicos. El contenido VIP / DRM debe desbloquearse primero en su plataforma.',
+      'Invitar a Dream a ver', 'Dream se ha unido', 'Aún no hay vídeo', 'Pega un enlace para empezar',
+      'Sin empezar', 'Listo', 'Girar vista', 'Vertical', 'Horizontal', 'Pantalla completa', 'Transmitir',
+      'Ayuda de reproducción', 'Consejo', 'Sentado justo a tu lado.', 'Retirar', 'Has retirado un mensaje, ',
+      'editar de nuevo', 'ha retirado una tarjeta', 'Te toca adivinar', 'Adivina un número',
+      'Tú y Dream adivináis por turnos el mismo número del 1 al 100. Gana quien lo acierte primero, y el rango se reduce con cada intento.',
+      'Pensando', 'Ronda terminada', 'Reproduciendo', 'Vídeo'
+    ],
+    it: [
+      'Guardare insieme', 'Metti qualcosa che vuoi vedere e resta un po\' accanto al tuo sogno.', 'Link del video',
+      'Incolla un link Bilibili o un link diretto .mp4 / .m3u8', 'Riproduci',
+      'Sono supportati video Bilibili, link diretti e la maggior parte dei player web pubblici. I contenuti VIP / DRM vanno prima sbloccati sulla piattaforma originale.',
+      'Invita Dream a guardare', 'Dream si è unito', 'Nessun video', 'Incolla un link per iniziare',
+      'Non iniziato', 'Pronto', 'Ruota vista', 'Verticale', 'Orizzontale', 'Schermo intero', 'Trasmetti',
+      'Aiuto riproduzione', 'Suggerimento', 'Seduto proprio accanto a te.', 'Ritira', 'Hai ritirato un messaggio, ',
+      'modifica di nuovo', 'ha ritirato una carta', 'Tocca a te indovinare', 'Indovina un numero',
+      'Tu e Dream indovinate a turno lo stesso numero da 1 a 100. Vince chi lo indovina per primo e l\'intervallo si restringe a ogni tentativo.',
+      'Sta pensando', 'Manche terminata', 'In riproduzione', 'Video'
+    ],
+    pt: [
+      'Ver juntos', 'Põe algo que queiras ver e fica um pouco ao lado do teu sonho.', 'Link do vídeo',
+      'Cola um link do Bilibili ou um link direto .mp4 / .m3u8', 'Reproduzir',
+      'São suportados vídeos do Bilibili, links diretos e a maioria dos leitores web públicos. O conteúdo VIP / DRM tem de ser desbloqueado primeiro na plataforma original.',
+      'Convidar Dream para ver', 'Dream juntou-se', 'Ainda sem vídeo', 'Cola um link para começar',
+      'Não iniciado', 'Pronto', 'Rodar vista', 'Vertical', 'Horizontal', 'Ecrã inteiro', 'Transmitir',
+      'Ajuda de reprodução', 'Dica', 'Sentado mesmo ao teu lado.', 'Retirar', 'Retiraste uma mensagem, ',
+      'editar novamente', 'retirou uma carta', 'É a tua vez', 'Adivinha um número',
+      'Tu e Dream adivinham à vez o mesmo número de 1 a 100. Ganha quem acertar primeiro e o intervalo diminui a cada tentativa.',
+      'A pensar', 'Ronda terminada', 'A reproduzir', 'Vídeo'
+    ]
+  };
+  Object.keys(I18N_EXTRA_ROWS).forEach(lang => {
+    if (!I18N_CORE[lang]) I18N_CORE[lang] = {};
+    I18N_EXTRA_ROWS[lang].forEach((value, index) => {
+      const key = I18N_EXTRA_KEYS[index];
       if (key && value) I18N_CORE[lang][key] = value;
     });
   });
@@ -6315,6 +6452,9 @@ body.cropper-open { overflow: hidden; }
         pendingReply: null,
         nextDreamCallAt: 0,
         nextDreamMessageAt: 0,
+        callDay: '',
+        callDayQuota: -1,
+        callDayCount: 0,
         call: null,
         lastCallAt: 0,
         recallDraft: null
@@ -6743,6 +6883,9 @@ body.cropper-open { overflow: hidden; }
       } : null,
       nextDreamCallAt: Number(chatRaw.nextDreamCallAt) || 0,
       nextDreamMessageAt: Number(chatRaw.nextDreamMessageAt) || 0,
+      callDay: String(chatRaw.callDay || ''),
+      callDayQuota: Number.isFinite(Number(chatRaw.callDayQuota)) ? clamp(Number(chatRaw.callDayQuota), 0, 3) : -1,
+      callDayCount: Number.isFinite(Number(chatRaw.callDayCount)) ? Math.max(0, Number(chatRaw.callDayCount)) : 0,
       lastCallAt: Number(chatRaw.lastCallAt) || 0,
       recallDraft: chatRaw.recallDraft && typeof chatRaw.recallDraft === 'object' && String(chatRaw.recallDraft.text || '').trim()
         ? { text: String(chatRaw.recallDraft.text).slice(0, 2000), ts: Number(chatRaw.recallDraft.ts) || Date.now() }
@@ -6911,9 +7054,9 @@ body.cropper-open { overflow: hidden; }
         if (!db.objectStoreNames.contains('media')) db.createObjectStore('media', { keyPath: 'id' });
         if (!db.objectStoreNames.contains('songs')) db.createObjectStore('songs', { keyPath: 'id' });
       };
-      req.onsuccess = () => resolve(req.result);
-      req.onerror = () => { dbFailed = true; console.warn('IndexedDB open failed', req.error); resolve(null); };
-      req.onblocked = () => { dbFailed = true; resolve(null); };
+      req.onsuccess = () => { dbFailed = false; resolve(req.result); };
+      req.onerror = () => { dbFailed = true; dbPromise = null; console.warn('IndexedDB open failed', req.error); resolve(null); };
+      req.onblocked = () => { dbFailed = true; dbPromise = null; resolve(null); };
     });
     return dbPromise;
   }
@@ -6939,9 +7082,12 @@ body.cropper-open { overflow: hidden; }
       try {
         const tx = db.transaction(store, 'readonly');
         const req = tx.objectStore(store).get(id);
-        req.onsuccess = () => resolve(req.result || null);
-        req.onerror = () => resolve(null);
-      } catch (e) { resolve(null); }
+        req.onsuccess = () => {
+          const fallback = (store === 'songs' ? memorySongs : memoryMedia).get(id);
+          resolve(req.result || fallback || null);
+        };
+        req.onerror = () => resolve((store === 'songs' ? memorySongs : memoryMedia).get(id) || null);
+      } catch (e) { resolve((store === 'songs' ? memorySongs : memoryMedia).get(id) || null); }
     });
   }
   async function dbGetAll(store) {
@@ -8330,7 +8476,7 @@ body.cropper-open { overflow: hidden; }
       <div class="msg-stack">
         <span class="msg-name">${esc(name)}</span>
         ${messageBubble(m)}
-        <span class="msg-time">${esc(dayLabel(m.ts))} ${pad2(new Date(m.ts).getHours())}:${pad2(new Date(m.ts).getMinutes())}${canRecall ? ` <button class="recall-link" type="button" data-recall-msg="${esc(m.id)}" aria-label="撤回这条内容">撤回</button>` : ''}</span>
+        <span class="msg-time">${esc(dayLabel(m.ts))} ${pad2(new Date(m.ts).getHours())}:${pad2(new Date(m.ts).getMinutes())}${canRecall ? ` <button class="recall-link" type="button" data-recall-msg="${esc(m.id)}" aria-label="${esc(t('撤回'))}">${esc(t('撤回'))}</button>` : ''}</span>
       </div>
     </div>`;
   }
@@ -9055,6 +9201,7 @@ body.cropper-open { overflow: hidden; }
 
   /* ---------------- 电话 ---------------- */
   let callMinimized = false;
+  let callMiniDragged = false;
   let callRecognition = null;
   let callRecognitionActive = false;
   let callRecognitionStopping = false;
@@ -9243,14 +9390,100 @@ body.cropper-open { overflow: hidden; }
     if (!activeCall()) return;
     showCallOverlay();
   }
+  function bindCallMiniDrag() {
+    const mini = $('#callMini');
+    if (!mini) return;
+    let dragging = false;
+    let startX = 0;
+    let startY = 0;
+    let startLeft = 0;
+    let startTop = 0;
+    let scaleX = 1;
+    let scaleY = 1;
+    let parent = null;
+    const clampPosition = () => {
+      if (!parent || !mini.style.left) return;
+      const maxLeft = Math.max(8, parent.clientWidth - mini.offsetWidth - 8);
+      const maxTop = Math.max(8, parent.clientHeight - mini.offsetHeight - 8);
+      const left = clamp(Number.parseFloat(mini.style.left) || 8, 8, maxLeft);
+      const top = clamp(Number.parseFloat(mini.style.top) || 8, 8, maxTop);
+      mini.style.left = left + 'px';
+      mini.style.top = top + 'px';
+    };
+    mini.addEventListener('pointerdown', event => {
+      if (event.button !== undefined && event.button !== 0) return;
+      parent = mini.offsetParent || mini.parentElement;
+      if (!parent) return;
+      const parentRect = parent.getBoundingClientRect();
+      const miniRect = mini.getBoundingClientRect();
+      scaleX = parentRect.width / Math.max(1, parent.clientWidth) || 1;
+      scaleY = parentRect.height / Math.max(1, parent.clientHeight) || 1;
+      startLeft = (miniRect.left - parentRect.left) / scaleX;
+      startTop = (miniRect.top - parentRect.top) / scaleY;
+      startX = event.clientX;
+      startY = event.clientY;
+      dragging = true;
+      callMiniDragged = false;
+      try { mini.setPointerCapture(event.pointerId); } catch (e) {}
+    });
+    mini.addEventListener('pointermove', event => {
+      if (!dragging || !parent) return;
+      const dx = (event.clientX - startX) / scaleX;
+      const dy = (event.clientY - startY) / scaleY;
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) callMiniDragged = true;
+      const maxLeft = Math.max(8, parent.clientWidth - mini.offsetWidth - 8);
+      const maxTop = Math.max(8, parent.clientHeight - mini.offsetHeight - 8);
+      mini.style.left = clamp(startLeft + dx, 8, maxLeft) + 'px';
+      mini.style.top = clamp(startTop + dy, 8, maxTop) + 'px';
+      mini.style.right = 'auto';
+      mini.style.bottom = 'auto';
+      if (callMiniDragged) event.preventDefault();
+    });
+    const stopDrag = event => {
+      if (!dragging) return;
+      dragging = false;
+      try { mini.releasePointerCapture(event.pointerId); } catch (e) {}
+      if (callMiniDragged) setTimeout(() => { callMiniDragged = false; }, 450);
+    };
+    mini.addEventListener('pointerup', stopDrag);
+    mini.addEventListener('pointercancel', stopDrag);
+    window.addEventListener('resize', clampPosition);
+  }
+  function ensureDreamCallDay() {
+    const chat = state.chat;
+    const today = dayKey(Date.now());
+    if (chat.callDay !== today || !(Number(chat.callDayQuota) >= 0)) {
+      chat.callDay = today;
+      const roll = Math.random();
+      chat.callDayQuota = roll < 0.4 ? 0 : roll < 0.9 ? 1 : 2;
+      chat.callDayCount = 0;
+    }
+    return chat;
+  }
   function scheduleNextDreamCall(first = false) {
     if (!state.settings.dreamCallAuto || state.chat.call) {
       state.chat.nextDreamCallAt = 0;
       return;
     }
-    const min = first ? 3 : 15;
-    const max = first ? 10 : 45;
-    state.chat.nextDreamCallAt = Date.now() + (min + Math.random() * (max - min)) * 60000;
+    const chat = ensureDreamCallDay();
+    if (Number(chat.callDayCount) >= Number(chat.callDayQuota)) {
+      const next = new Date();
+      next.setDate(next.getDate() + 1);
+      next.setHours(9 + Math.floor(Math.random() * 12), Math.floor(Math.random() * 60), 0, 0);
+      chat.nextDreamCallAt = next.getTime();
+      return;
+    }
+    const min = first ? 120 : 240;
+    const max = first ? 300 : 600;
+    const at = new Date(Date.now() + (min + Math.random() * (max - min)) * 60000);
+    const hour = at.getHours() + at.getMinutes() / 60;
+    if (hour < 8) {
+      at.setHours(9 + Math.floor(Math.random() * 2), Math.floor(Math.random() * 60), 0, 0);
+    } else if (hour >= 23) {
+      at.setDate(at.getDate() + 1);
+      at.setHours(9 + Math.floor(Math.random() * 2), Math.floor(Math.random() * 60), 0, 0);
+    }
+    chat.nextDreamCallAt = at.getTime();
   }
   function connectCall(call) {
     if (!call) return;
@@ -9303,6 +9536,13 @@ body.cropper-open { overflow: hidden; }
   }
   function startIncomingCall() {
     if (activeCall() || !state.settings.dreamCallAuto || !enabledCards().length) return false;
+    const plan = ensureDreamCallDay();
+    if (Number(plan.callDayCount) >= Number(plan.callDayQuota)) {
+      scheduleNextDreamCall(false);
+      saveState();
+      return false;
+    }
+    plan.callDayCount = Number(plan.callDayCount) + 1;
     closeChatPlus();
     stopChatMusic();
     const now = Date.now();
@@ -11993,7 +12233,12 @@ body.cropper-open { overflow: hidden; }
       const rec = await dbGet('songs', track.id);
       if (!rec || !rec.blob) { toast('这首歌的本地文件找不到了，请重新导入', 'error'); return; }
       if (songURLs.has(track.id)) src = songURLs.get(track.id);
-      else { src = URL.createObjectURL(rec.blob); songURLs.set(track.id, src); }
+      else {
+        let blob = rec.blob;
+        if (!blob.type) blob = new Blob([blob], { type: audioMimeFor(track.name || rec.name) });
+        src = URL.createObjectURL(blob);
+        songURLs.set(track.id, src);
+      }
     } else {
       src = track.url;
     }
@@ -12030,29 +12275,84 @@ body.cropper-open { overflow: hidden; }
     idx = (idx + offset + state.music.length) % state.music.length;
     await loadTrack(state.music[idx].id, true);
   }
-  async function importMusicFiles() {
+  const AUDIO_EXT_MIME = {
+    mp3: 'audio/mpeg', mpga: 'audio/mpeg', m4a: 'audio/mp4', mp4: 'audio/mp4', wav: 'audio/wav',
+    ogg: 'audio/ogg', oga: 'audio/ogg', opus: 'audio/ogg', flac: 'audio/flac', aac: 'audio/aac',
+    weba: 'audio/webm', webm: 'audio/webm', aiff: 'audio/aiff', aif: 'audio/aiff',
+    amr: 'audio/amr', '3gp': 'audio/3gpp'
+  };
+  function audioExtOf(name) {
+    return (String(name || '').match(/\.([a-z0-9]+)$/i) || [])[1]?.toLowerCase() || '';
+  }
+  function audioMimeFor(name, type) {
+    const t = String(type || '').toLowerCase();
+    if (t.startsWith('audio/')) return t;
+    return AUDIO_EXT_MIME[audioExtOf(name)] || 'audio/mpeg';
+  }
+  function isAudioFile(file) {
+    const type = String(file?.type || '').toLowerCase();
+    if (type.startsWith('audio/')) return true;
+    if (AUDIO_EXT_MIME[audioExtOf(file?.name)]) return true;
+    return !type || type === 'application/octet-stream' || type === 'binary/octet-stream';
+  }
+  function triggerMusicFilePick() {
+    const input = $('#musicFileInput');
+    if (input) {
+      try { input.value = ''; input.click(); return; } catch (e) {}
+    }
+    importMusicFiles();
+  }
+  async function importMusicFiles(fileList = null) {
     if (isImportingMusic) return;
-    const files = await pickFile('audio/*', true);
+    const files = fileList ? Array.from(fileList) : await pickFile('audio/*,.mp3,.m4a,.mp4,.wav,.aac,.flac,.ogg,.oga,.opus,.weba,.webm,.aiff,.amr', true);
+    if (!files || !files.length) return;
+    await importMusicFileList(files);
+  }
+  async function importMusicFileList(files) {
+    if (isImportingMusic) return;
     if (!files || !files.length) return;
     isImportingMusic = true;
     toast('正在导入歌曲…');
     let added = 0;
-    for (const file of files.slice(0, 100)) {
-      try {
-        if (file.size > 120 * 1024 * 1024) { console.warn('skip large file', file.name); continue; }
-        const id = uid('song');
-        await dbPut('songs', { id, blob: file, name: file.name, createdAt: Date.now() });
-        const meta = parseTrackMeta(file.name);
-        state.music.push({ id, name: meta.name, artist: meta.artist, kind: 'local', mediaId: id, url: '', addedAt: Date.now() });
-        added++;
-      } catch (e) { console.warn(e); }
+    let failed = 0;
+    let memoryOnly = 0;
+    try {
+      for (const file of files.slice(0, 100)) {
+        try {
+          if (!isAudioFile(file)) { failed++; console.warn('skip non-audio', file.name); continue; }
+          if (file.size > 200 * 1024 * 1024) { failed++; console.warn('skip large file', file.name); continue; }
+          const id = uid('song');
+          const blob = new Blob([file], { type: audioMimeFor(file.name, file.type) });
+          const stored = await dbPut('songs', { id, blob, name: file.name, createdAt: Date.now() });
+          if (!stored || dbFailed) {
+            memorySongs.set(id, { id, blob, name: file.name, createdAt: Date.now() });
+            memoryOnly++;
+          }
+          const meta = parseTrackMeta(file.name);
+          state.music.push({ id, name: meta.name, artist: meta.artist, kind: 'local', mediaId: id, url: '', addedAt: Date.now() });
+          added++;
+        } catch (e) { failed++; console.warn('music import failed', e); }
+      }
+    } finally {
+      isImportingMusic = false;
     }
-    isImportingMusic = false;
-    if (!added) { toast('没有可导入的音频文件', 'error'); return; }
+    if (!added) {
+      toast(failed ? '这些文件不是可用的音频，或浏览器存储空间不足' : '没有可导入的音频文件', 'error');
+      return;
+    }
     saveState(true);
     if (!currentTrackId) currentTrackId = state.music[state.music.length - added].id;
     renderMusic();
-    toast(`导入了 ${added} 首歌，保存在这台设备里`);
+    toast(memoryOnly
+      ? `导入了 ${added} 首歌；其中 ${memoryOnly} 首只在本次打开有效，请检查浏览器存储权限`
+      : `导入了 ${added} 首歌，保存在这台设备里`);
+  }
+  function normalizeRemoteTrackUrl(value) {
+    let url = String(value || '').trim().replace(/^[<"'“”‘’]+|[>"'“”‘’]+$/g, '').replace(/&amp;/gi, '&').replace(/[，。；、！？]+$/g, '');
+    if (!url || url.startsWith('#')) return '';
+    if (/^\/\//.test(url)) url = 'https:' + url;
+    else if (!/^[a-z][a-z0-9+.-]*:/i.test(url) && /^(?:www\.)?[\w.-]+\.[a-z]{2,}(?::\d+)?(?:\/|$)/i.test(url)) url = 'https://' + url;
+    return /^https?:\/\//i.test(url) ? url : '';
   }
   function parsePlaylistText(text, filename = '') {
     const raw = String(text || '').trim();
@@ -12062,9 +12362,9 @@ body.cropper-open { overflow: hidden; }
         const data = JSON.parse(raw);
         const arr = Array.isArray(data) ? data : (Array.isArray(data.tracks) ? data.tracks : []);
         return arr.map(item => {
-          if (typeof item === 'string') return { url: item };
-          return { url: item.url || item.src || '', name: item.name || item.title || '', artist: item.artist || item.singer || '' };
-        }).filter(x => /^https?:\/\//i.test(x.url));
+          if (typeof item === 'string') return { url: normalizeRemoteTrackUrl(item) };
+          return { url: normalizeRemoteTrackUrl(item.url || item.src || ''), name: item.name || item.title || '', artist: item.artist || item.singer || '' };
+        }).filter(x => x.url);
       } catch (e) { /* fall through */ }
     }
     if (/\.pls/i.test(filename) || /^\[playlist\]/i.test(raw)) {
@@ -12081,8 +12381,8 @@ body.cropper-open { overflow: hidden; }
         const f = files[k];
         const base = (f.title || decodeURIComponent((f.file || '').split('/').pop() || '网络音乐')).replace(/\.[^.]+$/, '');
         const meta = parseTrackMeta(base);
-        return { url: f.file, name: meta.name, artist: meta.artist };
-      }).filter(x => /^https?:\/\//i.test(x.url));
+        return { url: normalizeRemoteTrackUrl(f.file), name: meta.name, artist: meta.artist };
+      }).filter(x => x.url);
     }
     const result = [];
     let pendingTitle = '';
@@ -12095,14 +12395,19 @@ body.cropper-open { overflow: hidden; }
         return;
       }
       if (value.startsWith('#')) return;
-      if (/^https?:\/\//i.test(value)) {
+      let normalized = normalizeRemoteTrackUrl(value);
+      if (!normalized) {
+        const embedded = value.match(/(?:https?:\/\/|www\.)[^\s<>"']+/i);
+        if (embedded) normalized = normalizeRemoteTrackUrl(embedded[0]);
+      }
+      if (normalized) {
         let name = pendingTitle;
         if (!name) {
-          try { name = decodeURIComponent(new URL(value).pathname.split('/').pop() || '网络音乐').replace(/\.[^.]+$/, ''); }
+          try { name = decodeURIComponent(new URL(normalized).pathname.split('/').pop() || '网络音乐').replace(/\.[^.]+$/, ''); }
           catch (e) { name = '网络音乐'; }
         }
         const meta = name.includes(' - ') ? parseTrackMeta(name) : { name, artist: '网络音乐' };
-        result.push({ url: value, name: meta.name, artist: meta.artist });
+        result.push({ url: normalized, name: meta.name, artist: meta.artist });
         pendingTitle = '';
       }
     });
@@ -12113,11 +12418,12 @@ body.cropper-open { overflow: hidden; }
     const existing = new Set(state.music.filter(t => t.kind === 'url').map(t => t.url));
     let added = 0;
     tracks.forEach(t => {
-      if (!t.url || existing.has(t.url)) return;
-      existing.add(t.url);
+      const url = normalizeRemoteTrackUrl(t.url);
+      if (!url || existing.has(url)) return;
+      existing.add(url);
       state.music.push({
         id: uid('song'), name: String(t.name || '网络音乐').slice(0, 120), artist: String(t.artist || '网络音乐').slice(0, 120),
-        kind: 'url', mediaId: '', url: t.url, addedAt: Date.now()
+        kind: 'url', mediaId: '', url, addedAt: Date.now()
       });
       added++;
     });
@@ -12159,14 +12465,14 @@ body.cropper-open { overflow: hidden; }
   function openUrlTracksSheet() {
     openSheet({
       title: '粘贴音频链接',
-      subtitle: '粘贴 http(s) 音频地址。',
+      subtitle: '粘贴 http(s) 或 www 开头的音频直链，也支持没有写协议的地址。',
       body: `<div class="field"><label for="urlTracksInput">音频直链</label><textarea id="urlTracksInput" style="min-height:145px" placeholder="https://example.com/song.mp3&#10;https://example.com/another-song.flac"></textarea></div>
         <p class="field-tip">浏览器支持 mp3、m4a、wav、ogg 等常见格式；flac 等格式是否可播放取决于浏览器。带登录限制的链接无法播放。</p>`,
       footer: `<button class="ghost-btn" data-close-overlay>取消</button><button class="primary-btn" id="urlTracksAdd">加入播放列表</button>`,
       onMount(root) {
         $('#urlTracksAdd', root).addEventListener('click', () => {
           const tracks = parsePlaylistText($('#urlTracksInput', root).value, 'links.m3u');
-          if (!tracks.length) { toast('没有读到有效的音频直链', 'error'); return; }
+          if (!tracks.length) { toast('没有读到有效的音频直链。请确认链接以 http(s):// 开头，并指向 mp3 / m4a / wav 等音频文件', 'error'); return; }
           closeOverlay();
           addRemoteTracks(tracks);
         });
@@ -12178,13 +12484,14 @@ body.cropper-open { overflow: hidden; }
       title: '把歌放进今晚',
       subtitle: '本地歌曲会保存在浏览器里；歌单可以导入链接。',
       body: `<div class="choice-cards">
-        <button class="choice-card" id="importLocalChoice"><svg class="icon"><use href="#i-music"/></svg>从设备导入歌曲<small style="font-size:8px;color:var(--ink-dim)">mp3 / m4a / wav</small></button>
-        <button class="choice-card" id="importPlaylistChoice"><svg class="icon"><use href="#i-link"/></svg>导入其他软件歌单<small style="font-size:8px;color:var(--ink-dim)">M3U / PLS / JSON</small></button>
+        <label class="choice-card" id="importLocalChoice" for="musicFileInput"><svg class="icon"><use href="#i-music"/></svg>从设备导入歌曲<small style="font-size:8px;color:var(--ink-dim)">mp3 / m4a / wav</small></label>
+        <button class="choice-card" id="importUrlChoice"><svg class="icon"><use href="#i-link"/></svg>粘贴音频链接<small style="font-size:8px;color:var(--ink-dim)">mp3 直链</small></button>
+        <button class="choice-card" id="importPlaylistChoice" style="grid-column:1/-1"><svg class="icon"><use href="#i-cards"/></svg>导入其他软件歌单<small style="font-size:8px;color:var(--ink-dim)">M3U / PLS / JSON</small></button>
       </div>
-      <p class="field-tip">歌曲文件只保存在此设备的浏览器存储中，不会上传到服务器。</p>`,
+      <p class="field-tip">歌曲文件只保存在此设备的浏览器存储中，不会上传到服务器。链接请使用以 http(s):// 开头的 mp3 / m4a / wav 等音频直链。</p>`,
       footer: `<button class="ghost-btn" data-close-overlay>取消</button>`,
       onMount(root) {
-        $('#importLocalChoice', root).addEventListener('click', () => { closeOverlay(); importMusicFiles(); });
+        $('#importUrlChoice', root).addEventListener('click', () => { closeOverlay(); openUrlTracksSheet(); });
         $('#importPlaylistChoice', root).addEventListener('click', () => { closeOverlay(); openPlaylistSheet(); });
       }
     });
@@ -12194,7 +12501,34 @@ body.cropper-open { overflow: hidden; }
     $('#musicPrev')?.addEventListener('click', () => playRelative(-1));
     $('#musicNext')?.addEventListener('click', () => playRelative(1));
     $('#musicImportBtn')?.addEventListener('click', openMusicImportSheet);
-    $('#musicFilesBtn')?.addEventListener('click', importMusicFiles);
+    $('#musicFileInput')?.addEventListener('change', event => {
+      const files = Array.from(event.target.files || []);
+      event.target.value = '';
+      if (files.length) {
+        closeOverlay();
+        importMusicFiles(files);
+      }
+    });
+    const musicView = $('#view-music');
+    if (musicView && !musicView.dataset.dropBound) {
+      musicView.dataset.dropBound = '1';
+      musicView.addEventListener('dragover', e => {
+        if (!e.dataTransfer || !Array.from(e.dataTransfer.types || []).includes('Files')) return;
+        e.preventDefault();
+        musicView.classList.add('dropping');
+      });
+      musicView.addEventListener('dragleave', e => {
+        if (!musicView.contains(e.relatedTarget)) musicView.classList.remove('dropping');
+      });
+      musicView.addEventListener('drop', e => {
+        const files = Array.from(e.dataTransfer?.files || []);
+        if (!files.length) return;
+        e.preventDefault();
+        musicView.classList.remove('dropping');
+        importMusicFileList(files);
+      });
+    }
+    $('#musicUrlBtn')?.addEventListener('click', openUrlTracksSheet);
     $('#playlistBtn')?.addEventListener('click', openPlaylistSheet);
     $('#musicClearBtn')?.addEventListener('click', () => {
       if (!state.music.length) return;
@@ -14827,12 +15161,12 @@ body.cropper-open { overflow: hidden; }
     const input = $('#videoUrlInput');
     if (input && document.activeElement !== input) input.value = v.url || '';
     const title = $('#videoTitle');
-    if (title) title.textContent = v.url ? (v.title || '正在播放') : '还没有选片子';
+    if (title) title.textContent = v.url ? (v.title || t('正在播放')) : t('还没有选片子');
     const source = $('#videoSource');
-    if (source) source.textContent = v.url ? (v.source || v.kind || '视频') : '粘贴一个链接，就能开始';
+    if (source) source.textContent = v.url ? (v.source || v.kind || t('视频')) : t('粘贴一个链接，就能开始');
     const badge = $('#videoBadge');
     if (badge) {
-      badge.textContent = v.url ? '已就绪' : '未开始';
+      badge.textContent = v.url ? t('已就绪') : t('未开始');
       badge.classList.toggle('live', Boolean(v.url));
     }
     const player = $('#videoPlayer');
@@ -14849,7 +15183,7 @@ body.cropper-open { overflow: hidden; }
     }
     const invite = $('#videoInviteBtn');
     if (invite) {
-      invite.innerHTML = `<svg class="icon"><use href="#i-companion"/></svg> ${v.invited ? '梦角已加入' : '邀请梦角一起看'}`;
+      invite.innerHTML = `<svg class="icon"><use href="#i-companion"/></svg> ${esc(t(v.invited ? '梦角已加入' : '邀请梦角一起看'))}`;
       invite.classList.toggle('active', Boolean(v.invited));
     }
     const companion = $('#videoCompanion');
@@ -14860,11 +15194,11 @@ body.cropper-open { overflow: hidden; }
         const name = $('#videoCompanionName');
         if (name) name.textContent = state.profile.dreamName;
         const line = $('#videoCompanionLine');
-        if (line) line.textContent = v.comment || '坐在你旁边，一起看。';
+        if (line) line.textContent = v.comment || t('坐在你旁边，一起看。');
       }
     }
     const layoutLabel = $('#videoLayoutBtn span');
-    if (layoutLabel) layoutLabel.textContent = v.layout === 'portrait' ? '横屏' : '竖屏';
+    if (layoutLabel) layoutLabel.textContent = t(v.layout === 'portrait' ? '横屏' : '竖屏');
     const rotateBtn = $('#videoRotateBtn');
     if (rotateBtn) rotateBtn.setAttribute('aria-label', `当前视角 ${v.rotate}°，点击旋转`);
   }
@@ -16481,7 +16815,16 @@ body.cropper-open { overflow: hidden; }
     $('#callAiToggle')?.addEventListener('click', toggleCallAiListen);
     $('#callMicHelp')?.addEventListener('click', openCallMicHelp);
     $('#callTypeLink')?.addEventListener('click', openCallTypeSheet);
-    $('#callMini')?.addEventListener('click', restoreCallOverlay);
+    $('#callMini')?.addEventListener('click', e => {
+      if (callMiniDragged) {
+        e.preventDefault();
+        e.stopPropagation();
+        callMiniDragged = false;
+        return;
+      }
+      restoreCallOverlay();
+    });
+    bindCallMiniDrag();
     $('#openMoments')?.addEventListener('click', () => openApp('moments'));
     $('#chatPeerProfile')?.addEventListener('click', () => openApp('settings'));
     $('#sendBtn')?.addEventListener('click', sendChatText);
